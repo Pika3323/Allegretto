@@ -117,6 +117,8 @@ void Engine::Kill() {
 
     delete inputController;
 
+    al_destroy_bitmap(screen_buffer);
+
     al_destroy_display(display);
     al_destroy_timer(timer);
     al_destroy_event_queue(event_queue);

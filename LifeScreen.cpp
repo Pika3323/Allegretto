@@ -11,12 +11,10 @@ LifeScreen::LifeScreen() {
 void LifeScreen::Init(InputController* inputController) {
     std::cout << "Life Screen initialized!" << std::endl;
 
-    //Set up keyboard input
-    inputController->RegisterKeyboardInput(ALLEGRO_KEY_O, this, (InDelegate) &LifeScreen::keyPress);
-    inputController->RegisterKeyboardInput(ALLEGRO_KEY_M, this, (InDelegate) &LifeScreen::manage);
-    inputController->RegisterKeyboardInput(ALLEGRO_KEY_B, this, (InDelegate) &LifeScreen::testFunction);
-    inputController->RegisterKeyboardInput(ALLEGRO_KEY_SPACE, this, (InDelegate) &LifeScreen::function);
+    //Setup keyboard input
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_ESCAPE, this, (InDelegate) &LifeScreen::exit);
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_A, this, (InDelegate) &LifeScreen::test1);
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_A, this, (InDelegate) &LifeScreen::test2);
 }
 
 void LifeScreen::Tick(float delta) {
@@ -38,22 +36,15 @@ void LifeScreen::Destroy() {
     al_destroy_bitmap(screen_buffer);
 }
 
-void LifeScreen::keyPress() {
-    blue = al_map_rgb(255, 0, 0);
-}
-
-void LifeScreen::manage() {
-    blue = al_map_rgb(255, 0, 255);
-}
-
-void LifeScreen::testFunction() {
-    blue = al_map_rgb(0, 255, 0);
-}
-
-void LifeScreen::function() {
-    std::cout << "Isaac is garbage" << std::endl;
-}
 
 void LifeScreen::exit() {
     GEngine->Quit();
+}
+
+void LifeScreen::test2() {
+    std::cout << "Test2" << std::endl;
+}
+
+void LifeScreen::test1() {
+    std::cout << "Test1" << std::endl;
 }

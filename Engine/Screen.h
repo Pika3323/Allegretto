@@ -18,8 +18,6 @@ public:
 
     virtual void Draw() = 0;
 
-    int q;
-
 protected:
 
     ALLEGRO_BITMAP* screen_buffer;

@@ -14,18 +14,26 @@ class GameObject;
 typedef void (GameObject::*InDelegate)();
 
 struct InputDelegate {
+    //The keycode corresponding to this input method
     int key;
+
+    //The object in which the input function will be called
     GameObject* object;
+
+    //Pointer to the function to be called on the keypress
     void(GameObject::*func)();
 
-    InputDelegate(int k, GameObject *o, void(GameObject::*p)()) : key(k), object(o), func(p) {}
+    InputDelegate(int key, GameObject *object, void(GameObject::*ptr)()) : key(key), object(object), func(ptr) {}
 };
 
 class InputController {
-    std::map<int, InputDelegate*> inputs;
+    //Multimap of all the input delegates and their corresponding key(s)
+    std::multimap<int, InputDelegate*> inputs;
 
 public:
+    //Registers an object's function to be called on a certain keyboard key press
     void RegisterKeyboardInput(int key, GameObject* object, void (GameObject::*ptr)());
 
+    //Handle different types of inputs and fire off their delegates
     void HandleInput(ALLEGRO_EVENT* event);
 };

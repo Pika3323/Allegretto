@@ -6,9 +6,11 @@
 
 void InputController::HandleInput(ALLEGRO_EVENT *event) {
     if (event->type == ALLEGRO_EVENT_KEY_DOWN) {
-        InputDelegate* delegate = inputs[event->keyboard.keycode];
-        if (delegate && delegate->object) {
-            (delegate->object->*delegate->func)();
+        //Gets all delegates for this keycode
+        auto range = inputs.equal_range(event->keyboard.keycode);
+        for (auto it = range.first; it != range.second; ++it) {
+            //Calls associated functions
+            (it->second->object->*it->second->func)();
         }
     }
 }

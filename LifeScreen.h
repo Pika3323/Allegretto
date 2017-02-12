@@ -18,15 +18,11 @@ public:
 
     virtual void Destroy() override;
 
-    void keyPress();
-
-    void manage();
-
-    void testFunction();
-
-    void function();
-
     void exit();
+
+    void test1();
+
+    void test2();
 
 private:
 
