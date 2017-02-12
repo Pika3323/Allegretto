@@ -20,10 +20,6 @@ public:
 
     void exit();
 
-    void test1();
-
-    void test2();
-
 private:
 
     float posX = 0, posY = 0;

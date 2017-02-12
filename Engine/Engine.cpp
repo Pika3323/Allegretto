@@ -93,9 +93,9 @@ void Engine::Draw() {
         active_screen->Draw();
     }
 
-    bShouldRedraw = false;
-
     al_set_target_bitmap(screen_buffer);
+
+    al_draw_bitmap(active_screen->screen_buffer, 0, 0, 0);
 
     for (auto bitmap : draw_stack) {
         al_draw_bitmap(bitmap, 0, 0, 0);
@@ -109,6 +109,8 @@ void Engine::Draw() {
     al_clear_to_color(BLACK);
 
     draw_stack.clear();
+
+    bShouldRedraw = false;
 }
 
 void Engine::Kill() {

@@ -14,7 +14,7 @@ class GameObject;
 typedef void (GameObject::*InDelegate)();
 
 struct InputDelegate {
-    //The keycode corresponding to this input method
+    //The key code corresponding to this input method
     int key;
 
     //The object in which the input function will be called

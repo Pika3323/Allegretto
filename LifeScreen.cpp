@@ -13,8 +13,6 @@ void LifeScreen::Init(InputController* inputController) {
 
     //Setup keyboard input
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_ESCAPE, this, (InDelegate) &LifeScreen::exit);
-    inputController->RegisterKeyboardInput(ALLEGRO_KEY_A, this, (InDelegate) &LifeScreen::test1);
-    inputController->RegisterKeyboardInput(ALLEGRO_KEY_A, this, (InDelegate) &LifeScreen::test2);
 }
 
 void LifeScreen::Tick(float delta) {
@@ -28,8 +26,6 @@ void LifeScreen::Draw() {
 
     al_draw_pixel(posX, posY, blue);
     al_draw_filled_circle(posX, posY, 50, blue);
-
-    GEngine->AddToDrawStack(screen_buffer);
 }
 
 void LifeScreen::Destroy() {
@@ -39,12 +35,4 @@ void LifeScreen::Destroy() {
 
 void LifeScreen::exit() {
     GEngine->Quit();
-}
-
-void LifeScreen::test2() {
-    std::cout << "Test2" << std::endl;
-}
-
-void LifeScreen::test1() {
-    std::cout << "Test1" << std::endl;
 }

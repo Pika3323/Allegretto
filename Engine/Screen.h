@@ -9,6 +9,8 @@
 
 
 class Screen : public GameObject {
+    friend class Engine;
+
 public:
     virtual void Init(InputController* input) override = 0 ;
 

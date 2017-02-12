@@ -6,7 +6,7 @@
 
 void InputController::HandleInput(ALLEGRO_EVENT *event) {
     if (event->type == ALLEGRO_EVENT_KEY_DOWN) {
-        //Gets all delegates for this keycode
+        //Gets all delegates for this key code
         auto range = inputs.equal_range(event->keyboard.keycode);
         for (auto it = range.first; it != range.second; ++it) {
             //Calls associated functions
