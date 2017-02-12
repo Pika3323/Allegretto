@@ -32,6 +32,8 @@ class Engine {
 
     ALLEGRO_KEYBOARD_STATE keyboard_state;
 
+    ALLEGRO_FONT* default_font;
+
     bool bShouldExit = false;
 
     bool bShouldRedraw = false;
@@ -44,14 +46,18 @@ class Engine {
 
     ALLEGRO_BITMAP* screen_buffer;
 
+    float currentDelta;
+
+    void DrawFps(float delta);
+
 public:
-    ALLEGRO_DISPLAY *getDisplay() const;
+    ALLEGRO_DISPLAY* getDisplay() const;
 
-    const ALLEGRO_DISPLAY_MODE &getDisplayMode() const;
+    ALLEGRO_DISPLAY_MODE getDisplayMode() const;
 
-    ALLEGRO_EVENT_QUEUE *getEventQueue() const;
+    ALLEGRO_EVENT_QUEUE* getEventQueue() const;
 
-    ALLEGRO_TIMER *getTimer() const;
+    ALLEGRO_TIMER* getTimer() const;
 
     void Init();
 

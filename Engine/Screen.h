@@ -21,7 +21,6 @@ public:
     virtual void Draw() = 0;
 
 protected:
-
     ALLEGRO_BITMAP* screen_buffer;
 };
 

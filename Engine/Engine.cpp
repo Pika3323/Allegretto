@@ -17,7 +17,7 @@ void Engine::Init() {
     std::cout << ALLEGRO_VERSION_STR << std::endl;
 
     if (!al_init_primitives_addon()) {
-        std::cerr << "Allegro Primitives Add-on could not be initialized" << std::endl;
+        std::cerr << "Allegro Primitives add-on could not be initialized" << std::endl;
         Quit();
     }
 
@@ -28,6 +28,17 @@ void Engine::Init() {
 
     if (!al_install_mouse()) {
         std::cerr << "Mouse drivers could not be installed" << std::endl;
+        Quit();
+    }
+
+    if (!al_init_font_addon() || !al_init_ttf_addon()) {
+        std::cerr << "Font add-on could not be initialized" << std::endl;
+        Quit();
+    }
+
+    default_font = al_load_font("Roboto-Regular.ttf", 11, 0);
+    if (!default_font) {
+        std::cerr << "Could not load default font" << std::endl;
         Quit();
     }
 
@@ -60,6 +71,8 @@ void Engine::Init() {
 }
 
 void Engine::Tick(float delta) {
+    currentDelta = delta;
+
     //Gets the current inputController states
     al_get_mouse_state(&mouse_state);
     al_get_keyboard_state(&keyboard_state);
@@ -105,6 +118,8 @@ void Engine::Draw() {
     al_set_target_bitmap(al_get_backbuffer(display));
     al_draw_bitmap(screen_buffer, 0, 0, 0);
 
+    DrawFps(currentDelta);
+
     al_flip_display();
     al_clear_to_color(BLACK);
 
@@ -131,19 +146,19 @@ void Engine::Quit() {
     bShouldExit = true;
 }
 
-ALLEGRO_DISPLAY *Engine::getDisplay() const {
+ALLEGRO_DISPLAY* Engine::getDisplay() const {
     return display;
 }
 
-const ALLEGRO_DISPLAY_MODE &Engine::getDisplayMode() const {
+ALLEGRO_DISPLAY_MODE Engine::getDisplayMode() const {
     return display_mode;
 }
 
-ALLEGRO_EVENT_QUEUE *Engine::getEventQueue() const {
+ALLEGRO_EVENT_QUEUE* Engine::getEventQueue() const {
     return event_queue;
 }
 
-ALLEGRO_TIMER *Engine::getTimer() const {
+ALLEGRO_TIMER* Engine::getTimer() const {
     return timer;
 }
 
@@ -159,4 +174,20 @@ bool Engine::ShouldDraw() {
 
 void Engine::AddToDrawStack(ALLEGRO_BITMAP *buffer) {
     draw_stack.push_back(buffer);
+}
+
+void Engine::DrawFps(float delta) {
+    ALLEGRO_COLOR textColor;
+    if (1 / delta >= 30){
+        textColor = al_map_rgb(0, 255, 0);
+    }
+    else{
+        textColor = al_map_rgb(255, 0 , 0);
+    }
+
+    al_draw_textf(default_font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 5, 17, ALLEGRO_ALIGN_RIGHT, "%.2f FPS", 1 / delta);
+    al_draw_textf(default_font, al_map_rgb(0, 0, 0), al_get_display_width(display) - 5, 33, ALLEGRO_ALIGN_RIGHT, "%.2fMS", delta * 1000);
+
+    al_draw_textf(default_font, textColor, al_get_display_width(display) - 6, 16, ALLEGRO_ALIGN_RIGHT, "%.2f FPS", 1 / delta);
+    al_draw_textf(default_font, textColor, al_get_display_width(display) - 6, 32, ALLEGRO_ALIGN_RIGHT, "%.2fMS", delta * 1000);
 }

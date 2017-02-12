@@ -3,6 +3,7 @@
 //
 
 #include "LifeScreen.h"
+#include <fstream>
 
 LifeScreen::LifeScreen() {
     screen_buffer = al_create_bitmap(1280, 720);
@@ -13,19 +14,36 @@ void LifeScreen::Init(InputController* inputController) {
 
     //Setup keyboard input
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_ESCAPE, this, (InDelegate) &LifeScreen::exit);
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_SPACE, this, (InDelegate) &LifeScreen::nextGeneration);
+
+    std::ifstream file("LIFE_HRV.DAT");
+    //Reads the file into the matrix
+    for (int i = 0; i < 20; ++i) {
+        for (int j = 0; j < 50; ++j) {
+            char state;
+            file >> state;
+            lifeMatrix[i][j] = state;
+        }
+    }
+
+    std::cout << "File open" << std::endl;
 }
 
 void LifeScreen::Tick(float delta) {
-    posX = (posX + (50 * delta));
-    posY = (posY + (50 * delta));
+
 }
 
 void LifeScreen::Draw() {
     al_set_target_bitmap(screen_buffer);
     al_clear_to_color(BLACK);
 
-    al_draw_pixel(posX, posY, blue);
-    al_draw_filled_circle(posX, posY, 50, blue);
+    for (int i = 0; i < 20; ++i) {
+        for (int j = 0; j < 50; ++j) {
+            if (lifeMatrix[i][j] == ALIVE) {
+                al_draw_filled_rectangle(j * 10, i * 10, j * 10 + 10, i * 10 + 10, al_map_rgb(255, 255, 255));
+            }
+        }
+    }
 }
 
 void LifeScreen::Destroy() {
@@ -36,3 +54,34 @@ void LifeScreen::Destroy() {
 void LifeScreen::exit() {
     GEngine->Quit();
 }
+
+void LifeScreen::nextGeneration() {
+    apmatrix<char> newGrid(20, 50);
+    int neighbourCount = 0;
+    for (int i = 0; i < 20; ++i) {
+        for (int j = 0; j < 50; ++j) {
+            if (i > 0 && lifeMatrix[i - 1][j] == ALIVE) neighbourCount++;
+            if (i > 0 && j > 0 && lifeMatrix[i - 1][j - 1] == ALIVE) neighbourCount++;
+            if (i > 0 && j < 49 && lifeMatrix[i - 1][j + 1] == ALIVE) neighbourCount++;
+            if (j > 0 && lifeMatrix[i][j - 1] == ALIVE) neighbourCount++;
+            if (j < 49 && lifeMatrix[i][j + 1] == ALIVE) neighbourCount++;
+            if (i < 19 && j > 0 && lifeMatrix[i + 1][j - 1] == ALIVE) neighbourCount++;
+            if (i < 19 && lifeMatrix[i + 1][j] == ALIVE) neighbourCount++;
+            if (i < 19 && j < 49 && lifeMatrix[i + 1][j + 1] == ALIVE) neighbourCount++;
+
+            char test = lifeMatrix[i][j];
+            if (lifeMatrix[i][j] == ALIVE && (neighbourCount < 2 || neighbourCount > 3)) {
+                newGrid[i][j] = DEAD;
+            } else if (lifeMatrix[i][j] == DEAD && neighbourCount == 3) {
+                newGrid[i][j] = ALIVE;
+            } else {
+                newGrid[i][j] = lifeMatrix[i][j];
+            }
+
+            neighbourCount = 0;
+        }
+    }
+
+    lifeMatrix = newGrid;
+}
+
