@@ -7,6 +7,7 @@
 #include "Core.h"
 #include "Screen.h"
 #include "InputController.h"
+#include "DebugOutput.h"
 
 #define MOUSE_LB 1
 #define MOUSE_RB 2
@@ -38,17 +39,28 @@ class Engine {
 
     bool bShouldRedraw = false;
 
+    //The active screen class
     class Screen* active_screen;
 
+    //Class controlling all forms of input
     class InputController* inputController;
 
+    //The stack of bitmaps to draw to the screen buffer
     std::vector<ALLEGRO_BITMAP*> draw_stack;
 
+    //The buffer used to draw things to the screen
     ALLEGRO_BITMAP* screen_buffer;
 
+    //Used in calculating delta time
+    float oldTime;
+
+    //The current delta time for the latest frame
     float currentDelta;
 
+    //Draws the current frame rate and frame timing on the screen
     void DrawFps(float delta);
+
+    std::vector<DebugOutput> debug_strings;
 
 public:
     ALLEGRO_DISPLAY* getDisplay() const;
@@ -80,6 +92,8 @@ public:
     void SetActiveScreen(Screen* screen);
 
     Engine();
+
+    void PrintDebugText(const std::string &text, ALLEGRO_COLOR color, float duration);
 };
 
 extern Engine* GEngine;

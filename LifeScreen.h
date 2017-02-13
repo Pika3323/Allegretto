@@ -30,6 +30,8 @@ private:
 
     float posX = 0, posY = 0;
 
+    int currentGeneration = 0;
+
     ALLEGRO_COLOR blue = al_map_rgb(0, 0, 255);
 
     apmatrix<char> lifeMatrix = apmatrix<char>(20, 50);

@@ -82,6 +82,14 @@ void Engine::Tick(float delta) {
         active_screen->Tick(delta);
     }
 
+    //Counts the duration of debug outputs and deletes them once they have been on screen for their allotted time
+    for (int i = 0; i < (int)debug_strings.size(); i++){
+        debug_strings[i].elapsedTime += delta;
+        if (debug_strings[i].elapsedTime >= debug_strings[i].duration){
+            debug_strings.erase(debug_strings.begin() + i);
+        }
+    }
+
     bShouldRedraw = true;
 }
 
@@ -119,6 +127,12 @@ void Engine::Draw() {
     al_draw_bitmap(screen_buffer, 0, 0, 0);
 
     DrawFps(currentDelta);
+
+    //Draws debug strings to the screen
+    for (int i = 0; i < (int)debug_strings.size(); i++){
+        al_draw_textf(default_font, al_map_rgb(0, 0, 0), 6, i * 16 + 50, ALLEGRO_ALIGN_LEFT, "%s", debug_strings[i].text.c_str());
+        al_draw_textf(default_font, debug_strings[i].color, 5, i * 16 + 49, ALLEGRO_ALIGN_LEFT, "%s", debug_strings[i].text.c_str());
+    }
 
     al_flip_display();
     al_clear_to_color(BLACK);
@@ -190,4 +204,9 @@ void Engine::DrawFps(float delta) {
 
     al_draw_textf(default_font, textColor, al_get_display_width(display) - 6, 16, ALLEGRO_ALIGN_RIGHT, "%.2f FPS", 1 / delta);
     al_draw_textf(default_font, textColor, al_get_display_width(display) - 6, 32, ALLEGRO_ALIGN_RIGHT, "%.2fMS", delta * 1000);
+}
+
+void Engine::PrintDebugText(const std::string &text, ALLEGRO_COLOR color, float duration) {
+    debug_strings.push_back(DebugOutput(text, color, duration));
+    std::clog << text << std::endl;
 }

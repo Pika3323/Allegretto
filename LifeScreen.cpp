@@ -16,7 +16,7 @@ void LifeScreen::Init(InputController* inputController) {
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_ESCAPE, this, (InDelegate) &LifeScreen::exit);
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_SPACE, this, (InDelegate) &LifeScreen::nextGeneration);
 
-    std::ifstream file("LIFE_HRV.DAT");
+    std::ifstream file("LIFE_GLI.DAT");
     //Reads the file into the matrix
     for (int i = 0; i < 20; ++i) {
         for (int j = 0; j < 50; ++j) {
@@ -69,7 +69,6 @@ void LifeScreen::nextGeneration() {
             if (i < 19 && lifeMatrix[i + 1][j] == ALIVE) neighbourCount++;
             if (i < 19 && j < 49 && lifeMatrix[i + 1][j + 1] == ALIVE) neighbourCount++;
 
-            char test = lifeMatrix[i][j];
             if (lifeMatrix[i][j] == ALIVE && (neighbourCount < 2 || neighbourCount > 3)) {
                 newGrid[i][j] = DEAD;
             } else if (lifeMatrix[i][j] == DEAD && neighbourCount == 3) {
@@ -81,6 +80,13 @@ void LifeScreen::nextGeneration() {
             neighbourCount = 0;
         }
     }
+
+    currentGeneration++;
+
+    char num[10];
+    itoa(currentGeneration, num, 10);
+
+    GEngine->PrintDebugText("Generation " + std::string(num), al_map_rgb(0, 255, 0), 5.f);
 
     lifeMatrix = newGrid;
 }
