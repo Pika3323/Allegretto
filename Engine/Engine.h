@@ -52,10 +52,10 @@ class Engine {
     ALLEGRO_BITMAP* screen_buffer;
 
     //Used in calculating delta time
-    float oldTime;
+    double old_time;
 
     //The current delta time for the latest frame
-    float currentDelta;
+    float current_delta;
 
     //Draws the current frame rate and frame timing on the screen
     void DrawFps(float delta);
@@ -73,7 +73,7 @@ public:
 
     void Init();
 
-    void Tick(float delta);
+    void Tick();
 
     void Draw();
 

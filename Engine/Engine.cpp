@@ -49,6 +49,9 @@ void Engine::Init() {
     }
     timer = al_create_timer(1.0 / FPS);
 
+    //Get the current time for time calculations
+    old_time = al_get_time();
+
     al_set_new_display_flags(ALLEGRO_OPENGL);
     al_set_new_window_title("The Game of Life");
 
@@ -70,8 +73,9 @@ void Engine::Init() {
     }
 }
 
-void Engine::Tick(float delta) {
-    currentDelta = delta;
+void Engine::Tick() {
+    current_delta = (float) (old_time - al_get_time());
+    old_time = al_get_time();
 
     //Gets the current inputController states
     al_get_mouse_state(&mouse_state);
@@ -79,12 +83,12 @@ void Engine::Tick(float delta) {
 
     //Tick the current active screen, if it exists
     if (active_screen) {
-        active_screen->Tick(delta);
+        active_screen->Tick(current_delta);
     }
 
     //Counts the duration of debug outputs and deletes them once they have been on screen for their allotted time
     for (int i = 0; i < (int)debug_strings.size(); i++){
-        debug_strings[i].elapsedTime += delta;
+        debug_strings[i].elapsedTime += current_delta;
         if (debug_strings[i].elapsedTime >= debug_strings[i].duration){
             debug_strings.erase(debug_strings.begin() + i);
         }
@@ -126,7 +130,7 @@ void Engine::Draw() {
     al_set_target_bitmap(al_get_backbuffer(display));
     al_draw_bitmap(screen_buffer, 0, 0, 0);
 
-    DrawFps(currentDelta);
+    DrawFps(current_delta);
 
     //Draws debug strings to the screen
     for (int i = 0; i < (int)debug_strings.size(); i++){
