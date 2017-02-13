@@ -74,7 +74,7 @@ void Engine::Init() {
 }
 
 void Engine::Tick() {
-    current_delta = (float) (old_time - al_get_time());
+    current_delta = (float) (al_get_time() - old_time);
     old_time = al_get_time();
 
     //Gets the current inputController states
