@@ -26,6 +26,8 @@ public:
 
     void nextGeneration();
 
+    void toggleDebugs();
+
 private:
 
     float posX = 0, posY = 0;

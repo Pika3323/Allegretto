@@ -8,6 +8,7 @@
 #include "Screen.h"
 #include "InputController.h"
 #include "DebugOutput.h"
+#include "Colour.h"
 
 #define MOUSE_LB 1
 #define MOUSE_RB 2
@@ -62,6 +63,8 @@ class Engine {
 
     std::vector<DebugOutput> debug_strings;
 
+    uint8_t debug_flags = 0;
+
 public:
     ALLEGRO_DISPLAY* getDisplay() const;
 
@@ -93,7 +96,24 @@ public:
 
     Engine();
 
-    void PrintDebugText(const std::string &text, ALLEGRO_COLOR color, float duration);
+    void PrintDebugText(const std::string &text, Colour color, float duration);
+
+    static const uint8_t ENGINE_DEBUG_DRAW_FPS = 0x01;
+    static const uint8_t ENGINE_DEBUG_DRAW_DEBUG_STRINGS = 0x02;
+    static const uint8_t ENGINE_DEBUG_3 = 0x04;
+    static const uint8_t ENGINE_DEBUG_4 = 0x08;
+    static const uint8_t ENGINE_DEBUG_5 = 0x10;
+    static const uint8_t ENGINE_DEBUG_6 = 0x20;
+    static const uint8_t ENGINE_DEBUG_7 = 0x40;
+    static const uint8_t ENGINE_DEBUG_8 = 0x80;
+
+    void AddEngineDebugFlag(uint8_t flag);
+
+    void SetEngineDebugFlag(uint8_t flags);
+
+    void RemoveEngineDebugFlag(uint8_t flag);
+
+    void ToggleEngineDebugFlag(uint8_t flag);
 };
 
 extern Engine* GEngine;

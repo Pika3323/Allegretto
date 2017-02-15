@@ -6,13 +6,14 @@
 
 #include <allegro5/color.h>
 #include <string>
+#include "Colour.h"
 
 struct DebugOutput{
     //String to output
     std::string text;
 
     //Color of the output
-    ALLEGRO_COLOR color;
+    Colour color;
 
     //Maximum duration of the output
     float duration;
@@ -20,6 +21,6 @@ struct DebugOutput{
     //Time that the output has been on the screen
     float elapsedTime;
 
-    DebugOutput(const std::string &text, const ALLEGRO_COLOR &color, float duration) : text(text), color(color),
+    DebugOutput(const std::string &text, const Colour &color, float duration) : text(text), color(color),
                                                                                        duration(duration) {}
 };

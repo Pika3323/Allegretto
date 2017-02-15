@@ -57,6 +57,8 @@ void Engine::Init() {
 
     display = al_create_display(SCREEN_W, SCREEN_H);
 
+    al_acknowledge_resize(display);
+
     screen_buffer = al_create_bitmap(SCREEN_W, SCREEN_H);
 
     al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -130,12 +132,18 @@ void Engine::Draw() {
     al_set_target_bitmap(al_get_backbuffer(display));
     al_draw_bitmap(screen_buffer, 0, 0, 0);
 
-    DrawFps(current_delta);
+    if (debug_flags & ENGINE_DEBUG_DRAW_FPS) {
+        DrawFps(current_delta);
+    }
 
-    //Draws debug strings to the screen
-    for (int i = 0; i < (int)debug_strings.size(); i++){
-        al_draw_textf(default_font, al_map_rgb(0, 0, 0), 6, i * 16 + 50, ALLEGRO_ALIGN_LEFT, "%s", debug_strings[i].text.c_str());
-        al_draw_textf(default_font, debug_strings[i].color, 5, i * 16 + 49, ALLEGRO_ALIGN_LEFT, "%s", debug_strings[i].text.c_str());
+    if (debug_flags & ENGINE_DEBUG_DRAW_DEBUG_STRINGS) {
+        //Draws debug strings to the screen
+        for (int i = 0; i < (int) debug_strings.size(); i++) {
+            al_draw_textf(default_font, al_map_rgb(0, 0, 0), 6, i * 16 + 50, ALLEGRO_ALIGN_LEFT, "%s",
+                          debug_strings[i].text.c_str());
+            al_draw_textf(default_font, debug_strings[i].color.ToAllegroColor(), 5, i * 16 + 49, ALLEGRO_ALIGN_LEFT, "%s",
+                          debug_strings[i].text.c_str());
+        }
     }
 
     al_flip_display();
@@ -181,9 +189,27 @@ ALLEGRO_TIMER* Engine::getTimer() const {
 }
 
 void Engine::HandleInput(ALLEGRO_EVENT *event) {
-    if (inputController) {
-        inputController->HandleInput(event);
+    switch (event->type) {
+        case ALLEGRO_EVENT_DISPLAY_CLOSE:
+            //Quit the game, close the window
+            Quit();
+            break;
+        case ALLEGRO_EVENT_TIMER:
+            //Handle current tick functions
+            Tick();
+            break;
+        case ALLEGRO_EVENT_DISPLAY_RESIZE:
+            al_destroy_bitmap(screen_buffer);
+            screen_buffer = al_create_bitmap(event->display.width, event->display.height);
+
+            active_screen->Resize(event->display.width, event->display.height);
+        default:
+            if (inputController) {
+                inputController->HandleInput(event);
+            }
+            break;
     }
+
 }
 
 bool Engine::ShouldDraw() {
@@ -210,7 +236,23 @@ void Engine::DrawFps(float delta) {
     al_draw_textf(default_font, textColor, al_get_display_width(display) - 6, 32, ALLEGRO_ALIGN_RIGHT, "%.2fMS", delta * 1000);
 }
 
-void Engine::PrintDebugText(const std::string &text, ALLEGRO_COLOR color, float duration) {
+void Engine::PrintDebugText(const std::string &text, Colour color, float duration) {
     debug_strings.push_back(DebugOutput(text, color, duration));
     std::clog << text << std::endl;
+}
+
+void Engine::AddEngineDebugFlag(uint8_t flag) {
+    debug_flags |= flag;
+}
+
+void Engine::SetEngineDebugFlag(uint8_t flags) {
+    debug_flags = flags;
+}
+
+void Engine::RemoveEngineDebugFlag(uint8_t flag) {
+    debug_flags &= ~flag;
+}
+
+void Engine::ToggleEngineDebugFlag(uint8_t flag) {
+    debug_flags ^= flag;
 }

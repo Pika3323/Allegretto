@@ -10,11 +10,12 @@ LifeScreen::LifeScreen() {
 }
 
 void LifeScreen::Init(InputController* inputController) {
-    std::cout << "Life Screen initialized!" << std::endl;
+    GEngine->PrintDebugText("Life Screen Initialized!", Colour::GREEN, 5.f);
 
     //Setup keyboard input
-    inputController->RegisterKeyboardInput(ALLEGRO_KEY_ESCAPE, this, (InDelegate) &LifeScreen::exit);
-    inputController->RegisterKeyboardInput(ALLEGRO_KEY_SPACE, this, (InDelegate) &LifeScreen::nextGeneration);
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_ESCAPE, this, (InKeyDelegate) &LifeScreen::exit);
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_SPACE, this, (InKeyDelegate) &LifeScreen::nextGeneration);
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_TILDE, this, (InKeyDelegate) &LifeScreen::toggleDebugs);
 
     std::ifstream file("LIFE_GLI.DAT");
     //Reads the file into the matrix
@@ -26,7 +27,7 @@ void LifeScreen::Init(InputController* inputController) {
         }
     }
 
-    std::cout << "File open" << std::endl;
+    GEngine->PrintDebugText("File Open", Colour::GREEN, 5.f);
 }
 
 void LifeScreen::Tick(float delta) {
@@ -40,7 +41,7 @@ void LifeScreen::Draw() {
     for (int i = 0; i < 20; ++i) {
         for (int j = 0; j < 50; ++j) {
             if (lifeMatrix[i][j] == ALIVE) {
-                al_draw_filled_rectangle(j * 10, i * 10, j * 10 + 10, i * 10 + 10, al_map_rgb(255, 255, 255));
+                al_draw_filled_rectangle(j * 10, i * 10, j * 10 + 10, i * 10 + 10, al_map_rgb(33, 150, 243));
             }
         }
     }
@@ -60,6 +61,7 @@ void LifeScreen::nextGeneration() {
     int neighbourCount = 0;
     for (int i = 0; i < 20; ++i) {
         for (int j = 0; j < 50; ++j) {
+            //Counts all the live neighbours in the 8 surrounding cells
             if (i > 0 && lifeMatrix[i - 1][j] == ALIVE) neighbourCount++;
             if (i > 0 && j > 0 && lifeMatrix[i - 1][j - 1] == ALIVE) neighbourCount++;
             if (i > 0 && j < 49 && lifeMatrix[i - 1][j + 1] == ALIVE) neighbourCount++;
@@ -77,17 +79,19 @@ void LifeScreen::nextGeneration() {
                 newGrid[i][j] = lifeMatrix[i][j];
             }
 
+            //Reset the number of live neighbours
             neighbourCount = 0;
         }
     }
 
     currentGeneration++;
 
-    char num[10];
-    itoa(currentGeneration, num, 10);
-
-    GEngine->PrintDebugText("Generation " + std::string(num), al_map_rgb(0, 255, 0), 5.f);
+    GEngine->PrintDebugText("Generation " + std::to_string(currentGeneration), Colour::MAGENTA, 5.f);
 
     lifeMatrix = newGrid;
+}
+
+void LifeScreen::toggleDebugs() {
+    GEngine->ToggleEngineDebugFlag(Engine::ENGINE_DEBUG_DRAW_FPS | Engine::ENGINE_DEBUG_DRAW_DEBUG_STRINGS);
 }
 

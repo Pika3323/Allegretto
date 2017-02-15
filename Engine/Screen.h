@@ -20,6 +20,11 @@ public:
 
     virtual void Draw() = 0;
 
+    virtual void Resize(int newX, int newY) {
+        al_destroy_bitmap(screen_buffer);
+        screen_buffer = al_create_bitmap(newX, newY);
+    }
+
 protected:
     ALLEGRO_BITMAP* screen_buffer;
 };
