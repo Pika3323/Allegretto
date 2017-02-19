@@ -4,23 +4,36 @@
 
 #pragma once
 
-#include <allegro5/color.h>
-#include <string>
+#include "Core.h"
 #include "Colour.h"
 
 struct DebugOutput{
-    //String to output
+    /**
+     * The message to be displayed on screen
+     */
     std::string text;
 
-    //Color of the output
+    /**
+     * The colour in which to display the message
+     */
     Colour color;
 
-    //Maximum duration of the output
+    /**
+     * The amount of time to display the message on screen
+     */
     float duration;
 
-    //Time that the output has been on the screen
+    /**
+     * The amount of time the message has already been disabled
+     */
     float elapsedTime;
 
-    DebugOutput(const std::string &text, const Colour &color, float duration) : text(text), color(color),
+    /**
+     * Constructs a message structure
+     * @param text The message
+     * @param colour The colour
+     * @param duration The duration
+     */
+    DebugOutput(const std::string &text, const Colour &colour, float duration) : text(text), color(colour),
                                                                                        duration(duration) {}
 };
