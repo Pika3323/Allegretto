@@ -159,7 +159,7 @@ public:
      * Called for every input, whether it be keyboard, mouse, or display.
      * Passes most input events to the #input_controller
      * @param event The current event being processed
-     * @see InputController
+     * @sa InputController
      */
     void HandleInput(ALLEGRO_EVENT* event);
 

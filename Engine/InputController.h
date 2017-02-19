@@ -9,34 +9,50 @@
 #include <allegro5/events.h>
 #include "GameObject.h"
 
+// Forward declaration of GameObject class
 class GameObject;
 
+/**
+ * An enum representing the buttons of the mouse
+ */
 enum class EMouseButton {
     Left,
     Right,
     Middle
 };
 
-typedef void (GameObject::*InKeyDelegate)();
-typedef void (GameObject::*InMouseDelegate)(EMouseButton, int, int);
-
-struct InputDelegate {
-    //The key code corresponding to this input method
+/**
+ * An object that encapsulates the data required for binding a function to an keyboard input method
+ */
+struct KeyboardInputDelegate {
+    /**
+     * The keycode corresponding to this delegate
+     */
     int key;
 
-    //The object in which the input function will be called
+    /**
+     * The object in which the function will be called on keypress
+     */
     GameObject* object;
 
-    //Pointer to the function to be called on the keypress
-    InKeyDelegate func;
+    /**
+     * Pointer to the function to be called on the keypress
+     */
+    void (GameObject::*func)();
 
-    InputDelegate(int key, GameObject *object, void(GameObject::*ptr)()) : key(key), object(object), func(ptr) {}
+    /**
+     * Constructor
+     * @param key The keycode
+     * @param object Object whose function will be called
+     * @param ptr Pointer to the function
+     */
+    KeyboardInputDelegate(int key, GameObject *object, void(GameObject::*ptr)()) : key(key), object(object), func(ptr) {}
 };
 
 struct MouseInputDelegate {
     GameObject* object;
 
-    InMouseDelegate delegate;
+    void (GameObject::*delegate)(EMouseButton, int ,int);
 
     /*MouseInputDelegate(GameObject *object, void (GameObject::*delegate)(EMouseButton, int, int) const) : object(object),
                                                                                              delegate(delegate) {}*/
@@ -44,7 +60,7 @@ struct MouseInputDelegate {
 
 class InputController {
     //Multimap of all the input delegates and their corresponding key(s)
-    std::multimap<int, InputDelegate*> keyInputs;
+    std::multimap<int, KeyboardInputDelegate*> keyInputs;
 
     std::multimap<int, MouseInputDelegate*> mouseInputs;
 

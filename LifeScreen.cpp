@@ -13,9 +13,10 @@ void LifeScreen::Init(InputController* inputController) {
     GEngine->PrintDebugText("Life Screen Initialized!", Colour::GREEN, 5.f);
 
     //Setup keyboard input
-    inputController->RegisterKeyboardInput(ALLEGRO_KEY_ESCAPE, this, (InKeyDelegate) &LifeScreen::exit);
-    inputController->RegisterKeyboardInput(ALLEGRO_KEY_SPACE, this, (InKeyDelegate) &LifeScreen::nextGeneration);
-    inputController->RegisterKeyboardInput(ALLEGRO_KEY_TILDE, this, (InKeyDelegate) &LifeScreen::toggleDebugs);
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_ESCAPE, this, (void (GameObject::*)()) &LifeScreen::exit);
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_SPACE, this,
+                                           (void (GameObject::*)()) &LifeScreen::nextGeneration);
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_TILDE, this, (void (GameObject::*)()) &LifeScreen::toggleDebugs);
 
     std::ifstream file("LIFE_GLI.DAT");
     //Reads the file into the matrix
@@ -41,7 +42,7 @@ void LifeScreen::Draw() {
     for (int i = 0; i < 20; ++i) {
         for (int j = 0; j < 50; ++j) {
             if (lifeMatrix[i][j] == ALIVE) {
-                al_draw_filled_rectangle(j * 10, i * 10, j * 10 + 10, i * 10 + 10, Colour(33, 150, 243));
+                al_draw_filled_rectangle(j * 10, i * 10, j * 10 + 10, i * 10 + 10, al_map_rgb(33, 150, 243));
             }
         }
     }
