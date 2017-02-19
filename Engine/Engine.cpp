@@ -113,7 +113,7 @@ void Engine::SetActiveScreen(Screen *screen) {
 void Engine::Draw() {
     //Clears the screen to black
     al_set_target_bitmap(screen_buffer);
-    al_clear_to_color(BLACK);
+    al_clear_to_color(Colour::BLACK);
 
     //Draws the current screen, if present
     if (active_screen) {
@@ -139,15 +139,15 @@ void Engine::Draw() {
     if (debug_flags & ENGINE_DEBUG_DRAW_DEBUG_STRINGS) {
         //Draws debug strings to the screen
         for (int i = 0; i < (int) debug_strings.size(); i++) {
-            al_draw_textf(default_font, al_map_rgb(0, 0, 0), 6, i * 16 + 50, ALLEGRO_ALIGN_LEFT, "%s",
+            al_draw_textf(default_font, Colour::BLACK, 6, i * 16 + 50, ALLEGRO_ALIGN_LEFT, "%s",
                           debug_strings[i].text.c_str());
-            al_draw_textf(default_font, debug_strings[i].color.ToAllegroColor(), 5, i * 16 + 49, ALLEGRO_ALIGN_LEFT, "%s",
+            al_draw_textf(default_font, debug_strings[i].color, 5, i * 16 + 49, ALLEGRO_ALIGN_LEFT, "%s",
                           debug_strings[i].text.c_str());
         }
     }
 
     al_flip_display();
-    al_clear_to_color(BLACK);
+    al_clear_to_color(Colour::BLACK);
 
     draw_stack.clear();
 

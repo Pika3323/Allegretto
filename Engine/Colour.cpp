@@ -14,10 +14,6 @@ const Colour Colour::CYAN(0, 255, 255);
 const Colour Colour::MAGENTA(255, 0, 255);
 const Colour Colour::TRANSPARENT(0, 0, 0, 0);
 
-ALLEGRO_COLOR Colour::ToAllegroColor() {
+Colour::operator ALLEGRO_COLOR() const {
     return al_map_rgba(red, green, blue, alpha);
-}
-
-void Colour::SetAlpha(uint8_t a) {
-    alpha = a;
 }

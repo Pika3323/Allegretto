@@ -10,14 +10,8 @@
 #include "DebugOutput.h"
 #include "Colour.h"
 
-#define MOUSE_LB 1
-#define MOUSE_RB 2
-#define MOUSE_MB 3
-
 #define SCREEN_W 1280
 #define SCREEN_H 720
-
-#define BLACK al_map_rgb(0, 0, 0)
 
 #define FPS 60
 

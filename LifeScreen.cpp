@@ -36,12 +36,12 @@ void LifeScreen::Tick(float delta) {
 
 void LifeScreen::Draw() {
     al_set_target_bitmap(screen_buffer);
-    al_clear_to_color(BLACK);
+    al_clear_to_color(Colour::BLACK);
 
     for (int i = 0; i < 20; ++i) {
         for (int j = 0; j < 50; ++j) {
             if (lifeMatrix[i][j] == ALIVE) {
-                al_draw_filled_rectangle(j * 10, i * 10, j * 10 + 10, i * 10 + 10, al_map_rgb(33, 150, 243));
+                al_draw_filled_rectangle(j * 10, i * 10, j * 10 + 10, i * 10 + 10, Colour(33, 150, 243));
             }
         }
     }
