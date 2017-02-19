@@ -32,6 +32,7 @@ struct Colour {
     static const Colour YELLOW;
     static const Colour CYAN;
     static const Colour MAGENTA;
+    static const Colour TRANSPARENT;
 };
 
 

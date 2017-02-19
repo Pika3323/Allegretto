@@ -86,8 +86,6 @@ void LifeScreen::nextGeneration() {
 
     currentGeneration++;
 
-    GEngine->PrintDebugText("Generation " + std::to_string(currentGeneration), Colour::MAGENTA, 5.f);
-
     lifeMatrix = newGrid;
 }
 

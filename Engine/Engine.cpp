@@ -68,10 +68,10 @@ void Engine::Init() {
 
     al_start_timer(timer);
 
-    inputController = new InputController();
+    input_controller = new InputController();
 
     if (active_screen) {
-        active_screen->Init(inputController);
+        active_screen->Init(input_controller);
     }
 }
 
@@ -79,7 +79,7 @@ void Engine::Tick() {
     current_delta = (float) (al_get_time() - old_time);
     old_time = al_get_time();
 
-    //Gets the current inputController states
+    //Gets the current state of input methods
     al_get_mouse_state(&mouse_state);
     al_get_keyboard_state(&keyboard_state);
 
@@ -106,7 +106,7 @@ bool Engine::ShouldTick() {
 void Engine::SetActiveScreen(Screen *screen) {
     active_screen = screen;
     if (active_screen) {
-        active_screen->Init(inputController);
+        active_screen->Init(input_controller);
     }
 }
 
@@ -158,7 +158,7 @@ void Engine::Kill() {
     active_screen->Destroy();
     delete active_screen;
 
-    delete inputController;
+    delete input_controller;
 
     al_destroy_bitmap(screen_buffer);
 
@@ -174,10 +174,6 @@ void Engine::Quit() {
 
 ALLEGRO_DISPLAY* Engine::getDisplay() const {
     return display;
-}
-
-ALLEGRO_DISPLAY_MODE Engine::getDisplayMode() const {
-    return display_mode;
 }
 
 ALLEGRO_EVENT_QUEUE* Engine::getEventQueue() const {
@@ -204,8 +200,8 @@ void Engine::HandleInput(ALLEGRO_EVENT *event) {
 
             active_screen->Resize(event->display.width, event->display.height);
         default:
-            if (inputController) {
-                inputController->HandleInput(event);
+            if (input_controller) {
+                input_controller->HandleInput(event);
             }
             break;
     }
@@ -236,8 +232,8 @@ void Engine::DrawFps(float delta) {
     al_draw_textf(default_font, textColor, al_get_display_width(display) - 6, 32, ALLEGRO_ALIGN_RIGHT, "%.2fMS", delta * 1000);
 }
 
-void Engine::PrintDebugText(const std::string &text, Colour color, float duration) {
-    debug_strings.push_back(DebugOutput(text, color, duration));
+void Engine::PrintDebugText(const std::string &text, Colour colour, float duration) {
+    debug_strings.push_back(DebugOutput(text, colour, duration));
     std::clog << text << std::endl;
 }
 
@@ -255,4 +251,8 @@ void Engine::RemoveEngineDebugFlag(uint8_t flag) {
 
 void Engine::ToggleEngineDebugFlag(uint8_t flag) {
     debug_flags ^= flag;
+}
+
+void Engine::AddNewUiLayer(class UILayer *layer) {
+    ui_layers.push_back(layer);
 }
