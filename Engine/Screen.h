@@ -12,6 +12,10 @@ class Screen : public GameObject {
     friend class Engine;
 
 public:
+    Screen(int screenWidth, int screenHeight) {
+        screen_buffer = al_create_bitmap(screenWidth, screenHeight);
+    }
+
     virtual void Init(InputController* input) override = 0 ;
 
     virtual void Tick(float delta) override = 0;

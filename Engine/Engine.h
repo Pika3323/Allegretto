@@ -10,9 +10,6 @@
 #include "DebugOutput.h"
 #include "Colour.h"
 
-#define SCREEN_W 1280
-#define SCREEN_H 720
-
 #define FPS 60
 
 /**
@@ -27,7 +24,17 @@ class Engine {
     /**
      * The queue of Allegro events
      */
-    ALLEGRO_EVENT_QUEUE* event_queue;
+    ALLEGRO_EVENT_QUEUE* eventQueue;
+
+    /**
+     * The current height of the display
+     */
+    int displayHeight = 720;
+
+    /**
+     * The current width of the display
+     */
+    int displayWidth = 1280;
 
     /**
      * The timer controlling the primary game loop
@@ -37,17 +44,17 @@ class Engine {
     /**
      * The current state of the mouse
      */
-    ALLEGRO_MOUSE_STATE mouse_state;
+    ALLEGRO_MOUSE_STATE mouseState;
 
     /**
      * The current state of the keyboard
      */
-    ALLEGRO_KEYBOARD_STATE keyboard_state;
+    ALLEGRO_KEYBOARD_STATE keyboardState;
 
     /**
-     * The default font used for things like displaying frame rate, and debugging. Currently "Roboto".
-     */
-    ALLEGRO_FONT* default_font;
+    * The default font used for things like displaying frame rate, and debugging. Currently "Roboto".
+    */
+    ALLEGRO_FONT* defaultFont;
 
     /**
      * Whether the game loop should exit and end the program
@@ -62,38 +69,38 @@ class Engine {
     /**
      * Reference to the current active screen
      */
-    class Screen* active_screen;
+    class Screen* activeScreen;
 
     /**
      * Reference to the input controller that manages most forms of user input
      */
-    class InputController* input_controller;
+    class InputController* inputController;
 
     /**
      * The stack of bitmaps to draw to the screen buffer
      */
-    std::vector<ALLEGRO_BITMAP*> draw_stack;
+    std::vector<ALLEGRO_BITMAP*> drawStack;
 
     /**
      * The set of UILayers to be handled
      */
-    std::vector<class UILayer*> ui_layers;
+    std::vector<class UILayer*> uiLayers;
 
     /**
      * The buffer used to draw things to the screen
      */
-    ALLEGRO_BITMAP* screen_buffer;
+    ALLEGRO_BITMAP* screenBuffer;
 
     /**
      * Used in calculating delta time.
      * The exact time at which the previous frame was drawn
      */
-    double old_time;
+    double oldTime;
 
     /**
      * The current delta time for the latest frame
      */
-    float current_delta;
+    float currentDelta;
 
     /**
      * Draws the current frame rate and frame timing on the screen
@@ -104,12 +111,12 @@ class Engine {
     /**
      * Array of all messages that should be drawn onto the screen for debug purposes
      */
-    std::vector<DebugOutput> debug_strings;
+    std::vector<DebugOutput> debugStrings;
 
     /**
      * Any special bit flags that should be taken in consideration for drawing while debugging
      */
-    uint8_t debug_flags = 0;
+    uint8_t debugFlags = 0;
 
 public:
     /**
@@ -129,6 +136,36 @@ public:
      * @return The current game timer
      */
     ALLEGRO_TIMER* getTimer() const;
+
+    /**
+     * Gets the current height of the display
+     * @return The height of the display
+     */
+    int getDisplayHeight() const;
+
+    /**
+     * Sets the height of the display
+     * @param displayHeight The new height of the display
+     */
+    void setDisplayHeight(int displayHeight);
+
+    /**
+     * Gets the current width of the display
+     * @return The width of the display
+     */
+    int getDisplayWidth() const;
+
+    /**
+     * Sets the current width of the display
+     * @param displayWidth The new width of the display
+     */
+    void setDisplayWidth(int displayWidth);
+
+    /**
+     * Gets the default font used by the Engine
+     * @return The default font
+     */
+    ALLEGRO_FONT* getDefaultFont() const;
 
     /**
      * Called to initialize the Engine and prepares it for drawing, and other game-related functions
@@ -240,6 +277,7 @@ public:
      * @param flag The flag to be toggled
      */
     void ToggleEngineDebugFlag(uint8_t flag);
+
 };
 
 /**

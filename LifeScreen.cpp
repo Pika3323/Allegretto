@@ -5,92 +5,278 @@
 #include "LifeScreen.h"
 #include <fstream>
 
-LifeScreen::LifeScreen() {
-    screen_buffer = al_create_bitmap(1280, 720);
-}
+LifeScreen::LifeScreen(int screenWidth, int screenHeight) : Screen(screenWidth, screenHeight) {}
 
 void LifeScreen::Init(InputController* inputController) {
-    GEngine->PrintDebugText("Life Screen Initialized!", Colour::GREEN, 5.f);
+    // Calculates the number of columns and rows that fit inside the screen
+    matrixColumns = GEngine->getDisplayWidth() / GRID_SIZE;
+    matrixRows = GEngine->getDisplayHeight() / GRID_SIZE;
 
-    //Setup keyboard input
-    inputController->RegisterKeyboardInput(ALLEGRO_KEY_ESCAPE, this, (void (GameObject::*)()) &LifeScreen::exit);
-    inputController->RegisterKeyboardInput(ALLEGRO_KEY_SPACE, this,
-                                           (void (GameObject::*)()) &LifeScreen::nextGeneration);
-    inputController->RegisterKeyboardInput(ALLEGRO_KEY_TILDE, this, (void (GameObject::*)()) &LifeScreen::toggleDebugs);
+    // Creates the matrix to be used in the game
+    lifeMatrix = apmatrix<char>(matrixRows, matrixColumns, DEAD);
 
-    std::ifstream file("LIFE_GLI.DAT");
-    //Reads the file into the matrix
-    for (int i = 0; i < 20; ++i) {
-        for (int j = 0; j < 50; ++j) {
-            char state;
-            file >> state;
-            lifeMatrix[i][j] = state;
-        }
-    }
+    // Setup keyboard input binding
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_ESCAPE, GEngine, &Engine::Quit);
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_SPACE, this, &LifeScreen::nextGeneration);
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_TILDE, this, &LifeScreen::toggleDebugs);
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_P, this, &LifeScreen::toggleAutoGenerate);
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_C, this, &LifeScreen::clearMatrix);
 
-    GEngine->PrintDebugText("File Open", Colour::GREEN, 5.f);
+    // The number keys open different pre-made levels that can be viewed
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_1, this, &LifeScreen::loadCat);
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_2, this, &LifeScreen::loadGlider);
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_3, this, &LifeScreen::loadGliderGun);
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_4, this, &LifeScreen::loadHrv);
+
+
+    // Setup mouse input binding
+    inputController->RegisterMouseInput(EMouseEvent::ButtonDown, this, &LifeScreen::onClick);
+    inputController->RegisterMouseInput(EMouseEvent::ButtonUp, this, &LifeScreen::onUnClick);
+    inputController->RegisterMouseInput(EMouseEvent::AxesChange, this, &LifeScreen::onMouseMove);
 }
 
 void LifeScreen::Tick(float delta) {
+    // Checks whether generations are being generated automatically
+    if (bAutoGenerate) {
+        elapsedSeconds += delta;
 
-}
-
-void LifeScreen::Draw() {
-    al_set_target_bitmap(screen_buffer);
-    al_clear_to_color(Colour::BLACK);
-
-    for (int i = 0; i < 20; ++i) {
-        for (int j = 0; j < 50; ++j) {
-            if (lifeMatrix[i][j] == ALIVE) {
-                al_draw_filled_rectangle(j * 10, i * 10, j * 10 + 10, i * 10 + 10, al_map_rgb(33, 150, 243));
-            }
+        // Creates a new generation every 0.1 elapsed seconds
+        if (elapsedSeconds > 0.1f) {
+            nextGeneration();
+            elapsedSeconds = 0.f;
         }
+    }
+
+    // If the left mouse button is down, set the current cell to be alive
+    if (bLeftMouseButtonDown) {
+        ALLEGRO_MOUSE_STATE mouseState;
+        al_get_mouse_state(&mouseState);
+
+        setStateAtPosition(mouseState.x, mouseState.y, ALIVE);
+    }
+
+    // If the left mouse button is down, set the current cell to be dead
+    if (bRightMouseButtonDown) {
+        ALLEGRO_MOUSE_STATE mouseState;
+        al_get_mouse_state(&mouseState);
+
+        setStateAtPosition(mouseState.x, mouseState.y, DEAD);
     }
 }
 
+void LifeScreen::Draw() {
+    // Sets the target bitmap to this screen's buffer
+    al_set_target_bitmap(screen_buffer);
+
+    // Clears the screen to black
+    al_clear_to_color(Colour::BLACK);
+
+    // Draws the grid lines for columns
+    for (int i = 0; i < matrixColumns; ++i) {
+        al_draw_line(GRID_SIZE * i, 0, GRID_SIZE * i, GEngine->getDisplayHeight(), Colour(25, 25, 25), 1);
+    }
+
+    // Draws the grid lines for rows
+    for (int k = 0; k < matrixRows; ++k) {
+        al_draw_line(0, GRID_SIZE * k, GEngine->getDisplayWidth(), GRID_SIZE * k, Colour(25, 25, 25), 1);
+    }
+
+    // Draws any live cells as a blue square
+    for (int i = 0; i < matrixRows; ++i) {
+        for (int j = 0; j < matrixColumns; ++j) {
+            if (lifeMatrix[i][j] == ALIVE) {
+                al_draw_filled_rectangle(j * GRID_SIZE, i * GRID_SIZE, j * GRID_SIZE + GRID_SIZE, i * GRID_SIZE + GRID_SIZE, Colour(33, 150, 243));
+            }
+        }
+    }
+
+    // Alerts the user that the game is paused
+    if (!bAutoGenerate) {
+        std::string message = "Game is paused. Press P to unpause.";
+        drawShadowedText(message, Colour::RED, GEngine->getDisplayWidth() - 5, 55, ALLEGRO_ALIGN_RIGHT);
+    }
+
+    // Use the old-fashioned itoa number to string conversion since std::to_string doesn't work with most compilers
+    char* generationNumber;
+    itoa(currentGeneration, generationNumber, 10);
+
+    // Draws the current generation number on screen
+    std::string generationText = "Current Generation: " + std::string(generationNumber);
+    drawShadowedText(generationText, Colour::CYAN, GEngine->getDisplayWidth() - 5, 75, ALLEGRO_ALIGN_RIGHT);
+
+    // Draws the options to open pre-set levels
+    std::string text = "1: Cat      2: Glider       3: Glider Gun       4. HRV";
+    drawShadowedText(text, Colour::CYAN, 5, GEngine->getDisplayHeight() - 15, ALLEGRO_ALIGN_LEFT);
+
+    // Draws the other game controls
+    std::string otherInstructions = "C: Clear Level         P: Pause Game         Space Bar: Advance Generation         Esc: Close Game";
+    drawShadowedText(otherInstructions, Colour::CYAN, GEngine->getDisplayWidth() - 5, GEngine->getDisplayHeight() - 15, ALLEGRO_ALIGN_RIGHT);
+}
+
 void LifeScreen::Destroy() {
+    // Destroys the buffer for this screen
     al_destroy_bitmap(screen_buffer);
 }
 
-
-void LifeScreen::exit() {
-    GEngine->Quit();
-}
-
 void LifeScreen::nextGeneration() {
-    apmatrix<char> newGrid(20, 50);
+    // Creates a matrix to store the new generation
+    apmatrix<char> newGrid(matrixRows, matrixColumns, DEAD);
+
     int neighbourCount = 0;
-    for (int i = 0; i < 20; ++i) {
-        for (int j = 0; j < 50; ++j) {
-            //Counts all the live neighbours in the 8 surrounding cells
+
+    for (int i = 0; i < matrixRows; ++i) {
+        for (int j = 0; j < matrixColumns; ++j) {
+            //Counts all the live neighbours in the 8 cells surrounding the current cell (checking if they're in range first)
             if (i > 0 && lifeMatrix[i - 1][j] == ALIVE) neighbourCount++;
             if (i > 0 && j > 0 && lifeMatrix[i - 1][j - 1] == ALIVE) neighbourCount++;
-            if (i > 0 && j < 49 && lifeMatrix[i - 1][j + 1] == ALIVE) neighbourCount++;
+            if (i > 0 && j < matrixColumns - 1 && lifeMatrix[i - 1][j + 1] == ALIVE) neighbourCount++;
             if (j > 0 && lifeMatrix[i][j - 1] == ALIVE) neighbourCount++;
-            if (j < 49 && lifeMatrix[i][j + 1] == ALIVE) neighbourCount++;
-            if (i < 19 && j > 0 && lifeMatrix[i + 1][j - 1] == ALIVE) neighbourCount++;
-            if (i < 19 && lifeMatrix[i + 1][j] == ALIVE) neighbourCount++;
-            if (i < 19 && j < 49 && lifeMatrix[i + 1][j + 1] == ALIVE) neighbourCount++;
+            if (j < matrixColumns - 1 && lifeMatrix[i][j + 1] == ALIVE) neighbourCount++;
+            if (i < matrixRows - 1 && j > 0 && lifeMatrix[i + 1][j - 1] == ALIVE) neighbourCount++;
+            if (i < matrixRows - 1 && lifeMatrix[i + 1][j] == ALIVE) neighbourCount++;
+            if (i < matrixRows - 1 && j < matrixColumns - 1 && lifeMatrix[i + 1][j + 1] == ALIVE) neighbourCount++;
 
             if (lifeMatrix[i][j] == ALIVE && (neighbourCount < 2 || neighbourCount > 3)) {
+                // Kills the current cell if underpopulated or overpopulated
                 newGrid[i][j] = DEAD;
             } else if (lifeMatrix[i][j] == DEAD && neighbourCount == 3) {
+                // Gives birth to a new cell if the neighbouring population count is just right
                 newGrid[i][j] = ALIVE;
             } else {
+                // Leaves the current cell untouched
                 newGrid[i][j] = lifeMatrix[i][j];
             }
 
-            //Reset the number of live neighbours
+            //Reset the number of live neighbours for the next cell to check
             neighbourCount = 0;
         }
     }
 
     currentGeneration++;
 
+    // Swaps the old generation with the new generation
     lifeMatrix = newGrid;
 }
 
 void LifeScreen::toggleDebugs() {
+    // Toggles some settings in the engine class that control whether to draw the frame rate on screen
     GEngine->ToggleEngineDebugFlag(Engine::ENGINE_DEBUG_DRAW_FPS | Engine::ENGINE_DEBUG_DRAW_DEBUG_STRINGS);
 }
 
+void LifeScreen::toggleAutoGenerate() {
+    // Toggles the option to have the game automatically generate the next generation
+    bAutoGenerate = !bAutoGenerate;
+}
+
+void LifeScreen::onClick(EMouseButton button, int x, int y) {
+    switch (button) {
+        case EMouseButton::Left:
+            // Sets the clicked cell to alive
+            setStateAtPosition(x, y, ALIVE);
+
+            // Indicates that this button is now held down
+            bLeftMouseButtonDown = true;
+            break;
+        case EMouseButton::Right:
+            // Sets the clicked cell to dead
+            setStateAtPosition(x, y, DEAD);
+
+            // Indicates that this button is now held down
+            bRightMouseButtonDown = true;
+            break;
+        case EMouseButton::Middle:break;
+    }
+}
+
+void LifeScreen::onMouseMove(EMouseButton button, int x, int y) {
+    if (bLeftMouseButtonDown) {
+        setStateAtPosition(x, y, ALIVE);
+    } else if (bRightMouseButtonDown) {
+        setStateAtPosition(x, y, DEAD);
+    }
+}
+
+void LifeScreen::onUnClick(EMouseButton button, int x, int y) {
+    switch (button) {
+        case EMouseButton::Left:
+            // Indicates that this button is now longer held down
+            bLeftMouseButtonDown = false;
+            break;
+        case EMouseButton::Right:
+            // Indicates that this button is now longer held down
+            bRightMouseButtonDown = false;
+            break;
+        case EMouseButton::Middle:break;
+    }
+}
+
+void LifeScreen::setStateAtPosition(int x, int y, char state) {
+    int matrixRow = y / GRID_SIZE;
+    int matrixColumn = x / GRID_SIZE;
+
+    // Checks for an out of range index and then sets that cell to be dead/alive
+    if (matrixRow >= 0 && matrixColumn >= 0 && matrixRow < lifeMatrix.numrows() && matrixColumn < lifeMatrix.numcols()) {
+        lifeMatrix[matrixRow][matrixColumn] = state;
+    }
+}
+
+void LifeScreen::clearMatrix() {
+    // Clears the current game (sets all cells to dead)
+    lifeMatrix = apmatrix<char>(matrixRows, matrixColumns, DEAD);
+
+    currentGeneration = 0;
+}
+
+void LifeScreen::openLevel(std::string file) {
+    // Clears the current level
+    clearMatrix();
+
+    // Opens the new level file
+    std::ifstream inFile(file);
+
+    // Checks if the file is open
+    if (inFile.is_open()) {
+        //Reads the file into the matrix
+        for (int i = 0; i < 20; ++i) {
+            for (int j = 0; j < 50; ++j) {
+                char state;
+                inFile >> state;
+                lifeMatrix[i][j] = state;
+            }
+        }
+
+        inFile.close();
+    } else {
+        // Notify the user that the file could not be opened
+        GEngine->PrintDebugText("Could not open file '" + file + "'", Colour::RED);
+    }
+}
+
+void LifeScreen::loadCat() {
+    // Loads the cat level
+    openLevel("LIFE_CAT.DAT");
+}
+
+void LifeScreen::loadGlider() {
+    // Loads the glider level
+    openLevel("LIFE_GLI.DAT");
+}
+
+void LifeScreen::loadGliderGun() {
+    // Loads the glider gun level
+    openLevel("LIFE_GUN.DAT");
+}
+
+void LifeScreen::loadHrv() {
+    // Loads the hrv level
+    openLevel("LIFE_HRV.DAT");
+}
+
+void LifeScreen::drawShadowedText(std::string message, Colour textColour, int x, int y, int justification) {
+    // Draws an offset black version of the text as a "shadow"
+    al_draw_text(GEngine->getDefaultFont(), Colour::BLACK, x, y, justification, message.c_str());
+    al_draw_text(GEngine->getDefaultFont(), textColour, x - 1, y - 1, justification, message.c_str());
+}
+
+
+#pragma clang diagnostic pop
