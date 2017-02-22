@@ -7,6 +7,7 @@
 
 LifeScreen::LifeScreen(int screenWidth, int screenHeight) : Screen(screenWidth, screenHeight) {}
 
+
 void LifeScreen::Init(InputController* inputController) {
     // Calculates the number of columns and rows that fit inside the screen
     matrixColumns = GEngine->getDisplayWidth() / GRID_SIZE;
@@ -27,7 +28,6 @@ void LifeScreen::Init(InputController* inputController) {
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_2, this, &LifeScreen::loadGlider);
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_3, this, &LifeScreen::loadGliderGun);
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_4, this, &LifeScreen::loadHrv);
-
 
     // Setup mouse input binding
     inputController->RegisterMouseInput(EMouseEvent::ButtonDown, this, &LifeScreen::onClick);
@@ -277,6 +277,3 @@ void LifeScreen::drawShadowedText(std::string message, Colour textColour, int x,
     al_draw_text(GEngine->getDefaultFont(), Colour::BLACK, x, y, justification, message.c_str());
     al_draw_text(GEngine->getDefaultFont(), textColour, x - 1, y - 1, justification, message.c_str());
 }
-
-
-#pragma clang diagnostic pop
