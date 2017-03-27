@@ -4,17 +4,19 @@
 
 #include "InputController.h"
 
-// Assign value to static invalidBound member
+// Assign a value to static invalidBound member
 const Bound2D MouseInputDelegate::invalidBound = Bound2D(Vector2D(-1, -1), Vector2D(-1, -1));
 
 void InputController::HandleInput(ALLEGRO_EVENT *event) {
     if (event->type == ALLEGRO_EVENT_KEY_DOWN) {
-        //Gets all delegates for this key code
+        // Gets all delegates for this key code
         auto range = keyInputs.equal_range(event->keyboard.keycode);
+
         for (auto it = range.first; it != range.second; ++it) {
-            //Calls associated functions
+            // Calls the associated bound functions
             (it->second->object->*it->second->func)();
         }
+
     } else if (event->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN || event->type == ALLEGRO_EVENT_MOUSE_BUTTON_UP ||
             event->type == ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY || event->type == ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY ||
             event->type == ALLEGRO_EVENT_MOUSE_AXES) {
@@ -31,7 +33,6 @@ void InputController::HandleInput(ALLEGRO_EVENT *event) {
                     (it->second->object->*it->second->delegate)(EMouseButton(event->mouse.button), event->mouse.x, event->mouse.y);
                 }
             }
-
         }
     }
 }

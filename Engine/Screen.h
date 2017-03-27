@@ -12,7 +12,7 @@ class Screen : public GameObject {
     friend class Engine;
 
 public:
-    Screen(int screenWidth, int screenHeight) {
+    Screen(int screenWidth, int screenHeight) : width(screenWidth), height(screenHeight) {
         screen_buffer = al_create_bitmap(screenWidth, screenHeight);
     }
 
@@ -30,6 +30,10 @@ public:
     }
 
 protected:
+    int width;
+
+    int height;
+
     ALLEGRO_BITMAP* screen_buffer;
 };
 

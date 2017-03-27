@@ -227,9 +227,15 @@ public:
     void SetActiveScreen(Screen* screen);
 
     /**
-     * Default contstructor
+     * Default constructor
      */
     Engine();
+
+    /**
+     * Get a reference to the InputController for dynamic input binding
+     * @return Reference to the Engine's InputController
+     */
+    InputController *getInputController() const;
 
     /**
      * Prints a bit of text onto the screen. Useful for debugging certain values

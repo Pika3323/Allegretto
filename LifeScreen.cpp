@@ -161,6 +161,7 @@ void LifeScreen::nextGeneration() {
 void LifeScreen::toggleDebugs() {
     // Toggles some settings in the engine class that control whether to draw the frame rate on screen
     GEngine->ToggleEngineDebugFlag(Engine::ENGINE_DEBUG_DRAW_FPS | Engine::ENGINE_DEBUG_DRAW_DEBUG_STRINGS);
+    GEngine->getInputController()->RegisterKeyboardInput(ALLEGRO_KEY_G, this, &LifeScreen::clearMatrix);
 }
 
 void LifeScreen::toggleAutoGenerate() {

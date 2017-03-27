@@ -1,12 +1,11 @@
 /******************************************************************************
  *	Name: Derek Ellis                                                         *
  *	Course: ICS4U                                                             *
- *	Date: Feb 22, 2017                                                        *
+ *	Date: Mar 24, 2017                                                        *
  *	                                                                          *
- *	Purpose: An implementation of Conway's Game of Life                       *
+ *	Purpose: An RPN calculator program                                        *
  *	                                                                          *
  *	Usage: Compile and Run. Instructions are displayed in-game                *
- *	       All game logic is held in the LifeScreen.h and LifeScreen.cpp files*
  *	Revision History:                                                         *
  *	                                                                          *
  *	Known Issues:                                                             *

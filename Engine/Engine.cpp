@@ -104,6 +104,14 @@ bool Engine::ShouldTick() {
 }
 
 void Engine::SetActiveScreen(Screen *screen) {
+    // Remove the old screen
+    if (activeScreen != nullptr) {
+        inputController->ClearForObject(screen);
+        activeScreen->Destroy();
+        delete activeScreen;
+    }
+
+    // Load and initialize the new screen
     activeScreen = screen;
     if (activeScreen) {
         activeScreen->Init(inputController);
@@ -285,4 +293,8 @@ void Engine::setDisplayWidth(int displayWidth) {
 
 ALLEGRO_FONT* Engine::getDefaultFont() const {
     return defaultFont;
+}
+
+InputController *Engine::getInputController() const {
+    return inputController;
 }
