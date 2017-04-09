@@ -12,6 +12,27 @@
 
 #define FPS 60
 
+enum class ECursor : uint8_t {
+    Default = ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT,
+    Arrow = ALLEGRO_SYSTEM_MOUSE_CURSOR_ARROW,
+    Busy = ALLEGRO_SYSTEM_MOUSE_CURSOR_BUSY,
+    Question = ALLEGRO_SYSTEM_MOUSE_CURSOR_QUESTION,
+    Edit = ALLEGRO_SYSTEM_MOUSE_CURSOR_EDIT,
+    Move = ALLEGRO_SYSTEM_MOUSE_CURSOR_MOVE,
+    ResizeN = ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_N,
+    ResizeW = ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_W,
+    ResizeS = ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_S,
+    ResizeE = ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_E,
+    ResizeNW = ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_NW,
+    ResizeSW = ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_SW,
+    ResizeSE = ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_SE,
+    ResizeNE = ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_NE,
+    Progress = ALLEGRO_SYSTEM_MOUSE_CURSOR_PROGRESS,
+    Link = ALLEGRO_SYSTEM_MOUSE_CURSOR_LINK,
+    AltSelect = ALLEGRO_SYSTEM_MOUSE_CURSOR_ALT_SELECT,
+    Unavailable = ALLEGRO_SYSTEM_MOUSE_CURSOR_UNAVAILABLE
+};
+
 /**
  * The primary Engine class that controls and manages the running of the game
  */
@@ -82,11 +103,6 @@ class Engine {
     std::vector<ALLEGRO_BITMAP*> drawStack;
 
     /**
-     * The set of UILayers to be handled
-     */
-    std::vector<class UILayer*> uiLayers;
-
-    /**
      * The buffer used to draw things to the screen
      */
     ALLEGRO_BITMAP* screenBuffer;
@@ -123,49 +139,49 @@ public:
      * Gets a reference to the current program display
      * @return The current display
      */
-    ALLEGRO_DISPLAY* getDisplay() const;
+    ALLEGRO_DISPLAY* GetDisplay() const;
 
     /**
      * Gets a reference to the current event queue
      * @return The current event queue
      */
-    ALLEGRO_EVENT_QUEUE* getEventQueue() const;
+    ALLEGRO_EVENT_QUEUE* GetEventQueue() const;
 
     /**
      * Gets a reference to the current game timer
      * @return The current game timer
      */
-    ALLEGRO_TIMER* getTimer() const;
+    ALLEGRO_TIMER* GetTimer() const;
 
     /**
      * Gets the current height of the display
      * @return The height of the display
      */
-    int getDisplayHeight() const;
+    int GetDisplayHeight() const;
 
     /**
      * Sets the height of the display
      * @param displayHeight The new height of the display
      */
-    void setDisplayHeight(int displayHeight);
+    void SetDisplayHeight(int displayHeight);
 
     /**
      * Gets the current width of the display
      * @return The width of the display
      */
-    int getDisplayWidth() const;
+    int GetDisplayWidth() const;
 
     /**
      * Sets the current width of the display
      * @param displayWidth The new width of the display
      */
-    void setDisplayWidth(int displayWidth);
+    void SetDisplayWidth(int displayWidth);
 
     /**
      * Gets the default font used by the Engine
      * @return The default font
      */
-    ALLEGRO_FONT* getDefaultFont() const;
+    ALLEGRO_FONT* GetDefaultFont() const;
 
     /**
      * Called to initialize the Engine and prepares it for drawing, and other game-related functions
@@ -204,7 +220,7 @@ public:
      * Checks whether the current loop of the primary game loop should be taken as a tick loop
      * @return Is the current loop a game tick loop
      */
-    bool ShouldTick();
+    bool ShouldDoTick();
 
     /**
      * Checks whether the current iteration of the primary game loop should be used to draw to the screen
@@ -213,12 +229,15 @@ public:
     bool ShouldDraw();
 
     /**
+     * Toggle the displaying of debug strings on screen, as well as framerate and other stats
+     */
+    void ToggleDebugDrawings();
+
+    /**
      * Adds a bitmap to be drawn onto the screen by the engine.
      * @param buffer The image buffer that should be drawn
      */
     void AddToDrawStack(ALLEGRO_BITMAP* buffer);
-
-    void AddNewUiLayer(class UILayer* layer);
 
     /**
      * Sets the current active screen class of the primary display
@@ -235,7 +254,7 @@ public:
      * Get a reference to the InputController for dynamic input binding
      * @return Reference to the Engine's InputController
      */
-    InputController *getInputController() const;
+    InputController *GetInputController() const;
 
     /**
      * Prints a bit of text onto the screen. Useful for debugging certain values
@@ -284,6 +303,11 @@ public:
      */
     void ToggleEngineDebugFlag(uint8_t flag);
 
+    /**
+     * Sets the current cursor beign displayed on screen
+     * @param cursor The type of cursor to display
+     */
+    void SetCursor(ECursor cursor);
 };
 
 /**

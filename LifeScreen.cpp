@@ -4,14 +4,15 @@
 
 #include "LifeScreen.h"
 #include <fstream>
+#include "Engine/Views/TextView.h"
 
 LifeScreen::LifeScreen(int screenWidth, int screenHeight) : Screen(screenWidth, screenHeight) {}
 
 
 void LifeScreen::Init(InputController* inputController) {
     // Calculates the number of columns and rows that fit inside the screen
-    matrixColumns = GEngine->getDisplayWidth() / GRID_SIZE;
-    matrixRows = GEngine->getDisplayHeight() / GRID_SIZE;
+    matrixColumns = GEngine->GetDisplayWidth() / GRID_SIZE;
+    matrixRows = GEngine->GetDisplayHeight() / GRID_SIZE;
 
     // Creates the matrix to be used in the game
     lifeMatrix = apmatrix<char>(matrixRows, matrixColumns, DEAD);
@@ -19,20 +20,32 @@ void LifeScreen::Init(InputController* inputController) {
     // Setup keyboard input binding
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_ESCAPE, GEngine, &Engine::Quit);
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_SPACE, this, &LifeScreen::nextGeneration);
-    inputController->RegisterKeyboardInput(ALLEGRO_KEY_TILDE, this, &LifeScreen::toggleDebugs);
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_P, this, &LifeScreen::toggleAutoGenerate);
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_C, this, &LifeScreen::clearMatrix);
 
     // The number keys open different pre-made levels that can be viewed
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_1, this, &LifeScreen::loadCat);
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_2, this, &LifeScreen::loadGlider);
-    inputController->RegisterKeyboardInput(ALLEGRO_KEY_3, this, &LifeScreen::loadGliderGun);
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_4, this, &LifeScreen::loadHrv);
 
     // Setup mouse input binding
     inputController->RegisterMouseInput(EMouseEvent::ButtonDown, this, &LifeScreen::onClick);
     inputController->RegisterMouseInput(EMouseEvent::ButtonUp, this, &LifeScreen::onUnClick);
     inputController->RegisterMouseInput(EMouseEvent::AxesChange, this, &LifeScreen::onMouseMove);
+
+    TextView* textView = new TextView(Vector2D(50, 70));
+    textView->SetId(5);
+    textView->SetFont(new Font("Roboto-Regular.ttf"));
+    textView->SetText("Hello World!");
+    textView->SetPadding(8);
+    textView->SetTextColour(Colour(0x212121));
+    textView->SetBackgroundColour(Colour::WHITE);
+    textView->BindOnClickDelegate(this, &LifeScreen::TestClick);
+    textView->BindOnHoverDelegate(this, &LifeScreen::TestHover);
+    textView->SetCornerRadius(2.f);
+    textView->SetCursor(ECursor::Link);
+
+    AddView(textView);
 }
 
 void LifeScreen::Tick(float delta) {
@@ -62,23 +75,24 @@ void LifeScreen::Tick(float delta) {
 
         setStateAtPosition(mouseState.x, mouseState.y, DEAD);
     }
+
 }
 
 void LifeScreen::Draw() {
-    // Sets the target bitmap to this screen's buffer
-    al_set_target_bitmap(screen_buffer);
 
-    // Clears the screen to black
-    al_clear_to_color(Colour::BLACK);
 
-    // Draws the grid lines for columns
+    // Alerts the user that the game is paused
+    if (!bAutoGenerate) {
+        std::string message = "Game is paused. Press P to unpause.";
+        drawShadowedText(message, Colour::RED, GEngine->GetDisplayWidth() - 5, 55, ALLEGRO_ALIGN_RIGHT);
+    }// Draws the grid lines for columns
     for (int i = 0; i < matrixColumns; ++i) {
-        al_draw_line(GRID_SIZE * i, 0, GRID_SIZE * i, GEngine->getDisplayHeight(), Colour(25, 25, 25), 1);
+        al_draw_line(GRID_SIZE * i, 0, GRID_SIZE * i, GEngine->GetDisplayHeight(), Colour(25, 25, 25), 1);
     }
 
     // Draws the grid lines for rows
     for (int k = 0; k < matrixRows; ++k) {
-        al_draw_line(0, GRID_SIZE * k, GEngine->getDisplayWidth(), GRID_SIZE * k, Colour(25, 25, 25), 1);
+        al_draw_line(0, GRID_SIZE * k, GEngine->GetDisplayWidth(), GRID_SIZE * k, Colour(25, 25, 25), 1);
     }
 
     // Draws any live cells as a blue square
@@ -90,32 +104,26 @@ void LifeScreen::Draw() {
         }
     }
 
-    // Alerts the user that the game is paused
-    if (!bAutoGenerate) {
-        std::string message = "Game is paused. Press P to unpause.";
-        drawShadowedText(message, Colour::RED, GEngine->getDisplayWidth() - 5, 55, ALLEGRO_ALIGN_RIGHT);
-    }
-
     // Use the old-fashioned itoa number to string conversion since std::to_string doesn't work with most compilers
     char* generationNumber;
     itoa(currentGeneration, generationNumber, 10);
 
     // Draws the current generation number on screen
     std::string generationText = "Current Generation: " + std::string(generationNumber);
-    drawShadowedText(generationText, Colour::CYAN, GEngine->getDisplayWidth() - 5, 75, ALLEGRO_ALIGN_RIGHT);
+    drawShadowedText(generationText, Colour::CYAN, GEngine->GetDisplayWidth() - 5, 75, ALLEGRO_ALIGN_RIGHT);
 
     // Draws the options to open pre-set levels
     std::string text = "1: Cat      2: Glider       3: Glider Gun       4. HRV";
-    drawShadowedText(text, Colour::CYAN, 5, GEngine->getDisplayHeight() - 15, ALLEGRO_ALIGN_LEFT);
+    drawShadowedText(text, Colour::CYAN, 5, GEngine->GetDisplayHeight() - 15, ALLEGRO_ALIGN_LEFT);
 
     // Draws the other game controls
     std::string otherInstructions = "C: Clear Level         P: Pause Game         Space Bar: Advance Generation         Esc: Close Game";
-    drawShadowedText(otherInstructions, Colour::CYAN, GEngine->getDisplayWidth() - 5, GEngine->getDisplayHeight() - 15, ALLEGRO_ALIGN_RIGHT);
+    drawShadowedText(otherInstructions, Colour::CYAN, GEngine->GetDisplayWidth() - 5, GEngine->GetDisplayHeight() - 15, ALLEGRO_ALIGN_RIGHT);
 }
 
 void LifeScreen::Destroy() {
     // Destroys the buffer for this screen
-    al_destroy_bitmap(screen_buffer);
+    al_destroy_bitmap(screenBuffer);
 }
 
 void LifeScreen::nextGeneration() {
@@ -161,7 +169,6 @@ void LifeScreen::nextGeneration() {
 void LifeScreen::toggleDebugs() {
     // Toggles some settings in the engine class that control whether to draw the frame rate on screen
     GEngine->ToggleEngineDebugFlag(Engine::ENGINE_DEBUG_DRAW_FPS | Engine::ENGINE_DEBUG_DRAW_DEBUG_STRINGS);
-    GEngine->getInputController()->RegisterKeyboardInput(ALLEGRO_KEY_G, this, &LifeScreen::clearMatrix);
 }
 
 void LifeScreen::toggleAutoGenerate() {
@@ -275,6 +282,29 @@ void LifeScreen::loadHrv() {
 
 void LifeScreen::drawShadowedText(std::string message, Colour textColour, int x, int y, int justification) {
     // Draws an offset black version of the text as a "shadow"
-    al_draw_text(GEngine->getDefaultFont(), Colour::BLACK, x, y, justification, message.c_str());
-    al_draw_text(GEngine->getDefaultFont(), textColour, x - 1, y - 1, justification, message.c_str());
+    al_draw_text(GEngine->GetDefaultFont(), Colour::BLACK, x, y, justification, message.c_str());
+    al_draw_text(GEngine->GetDefaultFont(), textColour, x - 1, y - 1, justification, message.c_str());
+}
+
+void LifeScreen::TestClick(View *view) {
+    std::cout << "Click on view with id " << view->GetId() << std::endl;
+}
+
+void LifeScreen::TestHover(EMouseEvent event, int x, int y) {
+    switch (event){
+        case EMouseEvent::AxesChange:break;
+        case EMouseEvent::ButtonDown:break;
+        case EMouseEvent::ButtonUp:break;
+        case EMouseEvent::EnterDisplay:break;
+        case EMouseEvent::LeaveDisplay:break;
+        case EMouseEvent::Hover:
+            //GEngine->PrintDebugText("Hovering over the view!");
+            break;
+        case EMouseEvent::Enter:
+            GEngine->PrintDebugText("Entered view!");
+            break;
+        case EMouseEvent::Exit:
+            GEngine->PrintDebugText("Exited view!");
+            break;
+    }
 }

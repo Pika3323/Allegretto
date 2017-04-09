@@ -9,6 +9,7 @@
 /**
  * A custom Colour structure that will allow for more custom colour functionalities
  * Includes automatic casting to ALLEGRO_COLOR.
+ * @see ALLEGRO_COLOR
  */
 struct Colour {
     /**
@@ -48,6 +49,9 @@ struct Colour {
      * @param a The alpha (opacity) component of the colour
      */
     Colour(uint8_t r, uint8_t g, uint8_t b, uint8_t a) : red(r), green(g), blue(b), alpha(a) {}
+
+    Colour(uint32_t c) : red((uint8_t) ((c >> 8) & 0xFF)), green((uint8_t) ((c >> 4) & 0xFF)), blue(
+            (uint8_t) ((c >> 2) & 0xFF)), alpha(0xFF) {}
 
     /**
      * Automatically casts the colour to an ALLEGRO_COLOR

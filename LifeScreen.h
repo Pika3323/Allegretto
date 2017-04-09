@@ -69,6 +69,10 @@ public:
     // Opens the hrv level
     void loadHrv();
 
+    void TestClick(View* view);
+
+    void TestHover(EMouseEvent event, int x, int y);
+
 private:
     // The number of current generation
     int currentGeneration = 0;

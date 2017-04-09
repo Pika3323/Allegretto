@@ -6,15 +6,26 @@
 
 #include "Engine.h"
 #include "InputController.h"
+#include "View.h"
 
+class View;
 
 class Screen : public GameObject {
-    friend class Engine;
+    std::map<int, View*> viewList;
+
+protected:
+    int width;
+
+    int height;
+
+    ALLEGRO_BITMAP* screenBuffer;
+
+    virtual void Draw();
+
+    virtual void DrawViews();
 
 public:
-    Screen(int screenWidth, int screenHeight) : width(screenWidth), height(screenHeight) {
-        screen_buffer = al_create_bitmap(screenWidth, screenHeight);
-    }
+    Screen(int screenWidth, int screenHeight);
 
     virtual void Init(InputController* input) override = 0 ;
 
@@ -22,19 +33,15 @@ public:
 
     virtual void Destroy() override = 0;
 
-    virtual void Draw() = 0;
+    virtual void DrawToBuffer();
 
-    virtual void Resize(int newX, int newY) {
-        al_destroy_bitmap(screen_buffer);
-        screen_buffer = al_create_bitmap(newX, newY);
-    }
+    virtual void Resize(int newX, int newY);
 
-protected:
-    int width;
+    ALLEGRO_BITMAP* const GetBuffer();
 
-    int height;
+    void AddView(View* view);
 
-    ALLEGRO_BITMAP* screen_buffer;
+    View* GetViewById(int id);
 };
 
 

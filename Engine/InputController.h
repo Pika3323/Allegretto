@@ -4,12 +4,10 @@
 
 #pragma once
 
-#include <vector>
-#include <map>
-#include <allegro5/events.h>
-#include "GameObject.h"
+#include "Core.h"
 #include "Vector2D.h"
 #include "Bound2D.h"
+
 
 // Forward declaration of GameObject class
 class GameObject;
@@ -32,6 +30,7 @@ enum class EMouseEvent {
     ButtonUp = ALLEGRO_EVENT_MOUSE_BUTTON_UP,
     EnterDisplay = ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY,
     LeaveDisplay = ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY,
+    Hover,
     Enter,
     Exit
 };
@@ -39,57 +38,50 @@ enum class EMouseEvent {
 /**
  * An object that encapsulates the data required for binding a function to an keyboard input method
  */
-struct KeyboardInputDelegate {
+class KeyboardInputDelegate : public Delegate<void (GameObject::*)()> {
     /**
      * The key code corresponding to this delegate
      */
     int key;
 
-    /**
-     * The object in which the function will be called on keypress
-     */
-    GameObject* object;
-
-    /**
-     * Pointer to the method function to be called on the keypress
-     */
-    void (GameObject::*func)();
-
+public:
     /**
      * Constructor
      * @param key The key code to bind the function to
      * @param object Object whose method will be called
      * @param ptr Pointer to the method function
      */
-    KeyboardInputDelegate(int key, GameObject *object, void(GameObject::*ptr)()) : key(key), object(object), func(ptr) {}
+     template<typename T>
+    KeyboardInputDelegate(T* object, void (T::*ptr)()) : key(key), Delegate(object, ptr) {}
+
+    /*virtual void Call() override {
+        (object->*method)();
+    }*/
 };
 
 /**
  * An object that encapsulates the data required for binding a function to mouse input
  */
-struct MouseInputDelegate {
-    /**
-     * The object in which the bound function will be called using
-     */
-    GameObject* object;
-
+class MouseInputDelegate : public Delegate<void (GameObject::*)(EMouseButton, int, int)> {
     /**
      * The area one screen at which this click should be registered to
      */
     Bound2D bounds = Bound2D(Vector2D(-1, -1), Vector2D(-1, -1));
 
     /**
-     * Pointer to the function that will be called on the key event
+     * Whether this mouse event is bound by a region
+     * @see bounds
      */
-    void (GameObject::*delegate)(EMouseButton, int, int);
+    bool isBound = false;
 
+public:
     /**
      * Constructor
      * @param object The object whose function will be called
      * @param d A pointer to the function to be called
      */
-    MouseInputDelegate(GameObject* object, void (GameObject::*d)(EMouseButton, int, int)) : object(object),
-                                                                                             delegate(d) {}
+    template<typename T>
+    MouseInputDelegate(T* object, void (T::*d)(EMouseButton, int, int)) : Delegate(object, d) {}
     /**
      * Constructor with bounds
      * @param object The object whose function will be called
@@ -97,14 +89,38 @@ struct MouseInputDelegate {
      * @param screenRegion The area in the window where this event should be called
      */
     MouseInputDelegate(GameObject* object, void (GameObject::*d)(EMouseButton, int, int), Bound2D screenRegion) :
-            object(object), delegate(d), bounds(screenRegion){
+            Delegate(object, d), bounds(screenRegion), isBound(true){}
 
+    /**
+     * Whether the event is location-bound
+     * @return Whether the event is location-bound
+     */
+    bool IsBound() const {
+        return isBound;
     }
 
     /**
-     * An invalid bound (one that can be ignored)
+     * Gets the bounds of the event
+     * @return The bounds
      */
-    static const Bound2D invalidBound;
+    Bound2D GetBounds() const {
+        return bounds;
+    }
+};
+
+class OtherMouseInputDelegate : public Delegate<void (GameObject::*)(EMouseEvent, int, int)> {
+    /**
+     * The area for this event to take place on the screen
+     */
+    Bound2D area;
+
+public:
+    template<typename T>
+    OtherMouseInputDelegate(T* object, void (GameObject::*method)(EMouseEvent, int, int), Bound2D bounds) : Delegate(object, method), area(bounds) {}
+
+    Bound2D GetArea() const {
+        return area;
+    }
 };
 
 /**
@@ -124,6 +140,8 @@ class InputController {
      */
     std::multimap<EMouseEvent, MouseInputDelegate*> mouseInputs;
 
+
+
 public:
     /**
      * Binds a class's method function to a keyboard input.
@@ -135,7 +153,8 @@ public:
      */
     template <typename T>
     void RegisterKeyboardInput(int key, T* object, void (T::*ptr)()) {
-        keyInputs.insert(std::make_pair(key, new KeyboardInputDelegate(key, (GameObject*) object, (void (GameObject::*)()) ptr)));
+        keyInputs.insert(std::make_pair(key,
+                                        new KeyboardInputDelegate((GameObject *) object, (void (GameObject::*)()) ptr)));
     }
 
     /**
@@ -166,6 +185,11 @@ public:
         mouseInputs.insert(std::make_pair(event, new MouseInputDelegate((GameObject*) object, (void (GameObject::*)(EMouseButton, int, int)) ptr, bounds)));
     }
 
+    template<typename T>
+    void RegisterMouseInput(EMouseEvent event, T* object, void (T::*ptr)(EMouseEvent, int, int), Bound2D bounds) {
+        mouseInputs.insert(std::make_pair(event, (MouseInputDelegate*) new OtherMouseInputDelegate(object, (void (GameObject::*)(EMouseEvent, int, int)) ptr, bounds)));
+    }
+
     /**
      * Clears all inputs bound to a specific object reference
      * @tparam T The type of object
@@ -174,13 +198,13 @@ public:
     template <typename T>
     void ClearForObject(T* object) {
         for (auto it = keyInputs.begin(); it != keyInputs.end(); ++it) {
-            if (it->second->object == object) {
+            if (it->second->GetObject<T>() == object) {
                 keyInputs.erase(it);
             }
         }
 
         for (auto it = mouseInputs.begin(); it != mouseInputs.end(); ++it) {
-            if (it->second->object == object) {
+            if (it->second->GetObject<T>() == object) {
                 mouseInputs.erase(it);
             }
         }

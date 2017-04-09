@@ -70,6 +70,10 @@ void Engine::Init() {
 
     inputController = new InputController();
 
+    // Default key bindings
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_ESCAPE, this, &Engine::Quit);
+    inputController->RegisterKeyboardInput(ALLEGRO_KEY_TILDE, this, &Engine::ToggleDebugDrawings);
+
     if (activeScreen) {
         activeScreen->Init(inputController);
     }
@@ -99,7 +103,7 @@ void Engine::Tick() {
     bShouldRedraw = true;
 }
 
-bool Engine::ShouldTick() {
+bool Engine::ShouldDoTick() {
     return !bShouldExit;
 }
 
@@ -125,12 +129,12 @@ void Engine::Draw() {
 
     //Draws the current screen, if present
     if (activeScreen) {
-        activeScreen->Draw();
+        activeScreen->DrawToBuffer();
     }
 
     al_set_target_bitmap(screenBuffer);
 
-    al_draw_bitmap(activeScreen->screen_buffer, 0, 0, 0);
+    al_draw_bitmap(activeScreen->GetBuffer(), 0, 0, 0);
 
     for (auto bitmap : drawStack) {
         al_draw_bitmap(bitmap, 0, 0, 0);
@@ -180,15 +184,15 @@ void Engine::Quit() {
     bShouldExit = true;
 }
 
-ALLEGRO_DISPLAY* Engine::getDisplay() const {
+ALLEGRO_DISPLAY* Engine::GetDisplay() const {
     return display;
 }
 
-ALLEGRO_EVENT_QUEUE* Engine::getEventQueue() const {
+ALLEGRO_EVENT_QUEUE* Engine::GetEventQueue() const {
     return eventQueue;
 }
 
-ALLEGRO_TIMER* Engine::getTimer() const {
+ALLEGRO_TIMER* Engine::GetTimer() const {
     return timer;
 }
 
@@ -261,15 +265,11 @@ void Engine::ToggleEngineDebugFlag(uint8_t flag) {
     debugFlags ^= flag;
 }
 
-void Engine::AddNewUiLayer(class UILayer *layer) {
-    uiLayers.push_back(layer);
-}
-
-int Engine::getDisplayHeight() const {
+int Engine::GetDisplayHeight() const {
     return displayHeight;
 }
 
-void Engine::setDisplayHeight(int displayHeight) {
+void Engine::SetDisplayHeight(int displayHeight) {
     Engine::displayHeight = displayHeight;
     activeScreen->Resize(displayWidth, displayHeight);
 
@@ -278,11 +278,11 @@ void Engine::setDisplayHeight(int displayHeight) {
     screenBuffer = al_create_bitmap(displayWidth, displayHeight);
 }
 
-int Engine::getDisplayWidth() const {
+int Engine::GetDisplayWidth() const {
     return displayWidth;
 }
 
-void Engine::setDisplayWidth(int displayWidth) {
+void Engine::SetDisplayWidth(int displayWidth) {
     Engine::displayWidth = displayWidth;
     activeScreen->Resize(displayWidth, displayHeight);
 
@@ -291,10 +291,18 @@ void Engine::setDisplayWidth(int displayWidth) {
     screenBuffer = al_create_bitmap(displayWidth, displayHeight);
 }
 
-ALLEGRO_FONT* Engine::getDefaultFont() const {
+ALLEGRO_FONT* Engine::GetDefaultFont() const {
     return defaultFont;
 }
 
-InputController *Engine::getInputController() const {
+InputController *Engine::GetInputController() const {
     return inputController;
+}
+
+void Engine::ToggleDebugDrawings() {
+    ToggleEngineDebugFlag(Engine::ENGINE_DEBUG_DRAW_FPS | Engine::ENGINE_DEBUG_DRAW_DEBUG_STRINGS);
+}
+
+void Engine::SetCursor(ECursor cursor) {
+    al_set_system_mouse_cursor(display, (ALLEGRO_SYSTEM_MOUSE_CURSOR) cursor);
 }
