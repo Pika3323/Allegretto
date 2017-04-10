@@ -99,6 +99,7 @@ private:
     void setStateAtPosition(int x, int y, char state);
 
     void openLevel(std::string file);
+
 };
 
 

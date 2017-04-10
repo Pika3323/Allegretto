@@ -26,22 +26,22 @@ struct Vector2D{
         y = V.y;
     }
 
-    Vector2D operator+(const Vector2D &V) {
+    Vector2D operator+(const Vector2D &V) const {
         return Vector2D(x + V.x, y + V.y);
     }
 
     //Subtracts two vectors
-    Vector2D operator-(const Vector2D &V) {
+    Vector2D operator-(const Vector2D &V) const {
         return Vector2D(x - V.x, y - V.y);
     }
 
     //Multiplies a vector by a scalar value
-    Vector2D operator*(float scale) {
+    Vector2D operator*(float scale) const {
         return Vector2D(x * scale, y * scale);
     }
 
     //Divides a vector by a scalar value
-    Vector2D operator/(float scale) {
+    Vector2D operator/(float scale) const {
         return Vector2D(x / scale, y / scale);
     }
 
@@ -111,8 +111,27 @@ struct Vector2D{
      * Calculates the magnitude of the vector
      * @return Magnitude of the vector
      */
-    float magnitude() {
+    float Magnitude() {
         return sqrtf(x * x + y * y);
+    }
+
+    /**
+     * Calculates the distance between the current vector and a given vector
+     * @param V The vector to find the distance to
+     * @return The distance between the vector coordinates
+     */
+    float DistanceTo(const Vector2D& V) {
+        return Vector2D(*this - V).Magnitude();
+    }
+
+    /**
+     * Calculates the distance between two vector coordinates
+     * @param A The first vector
+     * @param B The second vector
+     * @return The distance between the two vector coordinates
+     */
+    static float DistanceBetween(const Vector2D& A, const Vector2D& B) {
+        return Vector2D(A - B).Magnitude();
     }
 };
 

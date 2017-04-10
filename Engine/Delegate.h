@@ -18,10 +18,13 @@ protected:
      */
     DelegateObjectBase* object;
 
-public:
-
+    /**
+     * Protected constructor for a base Delegate. Should only be called by inheriting classes
+     * @param object The object whose method is being delegated
+     */
     DelegateBase(DelegateObjectBase* object) : object(object) {}
 
+public:
     /**
      * Gets the object bound to this delegate
      * @tparam T The type of the object that should be gotten
@@ -32,18 +35,20 @@ public:
         return (T*) object;
     }
 
+    /**
+     * Virtual Destructor required for polymorphism
+     */
     virtual ~DelegateBase() {}
 };
 
 /**
  * A class used to leverage polymorphism into storing pointers to methods of any type of object.
- * Classified as an extreme "hack" by some people. Called useless by other naive people. But man.. is it useful.
+ * Called an extreme "hack" by some people. Called useless by other naive people. But man.. is it useful.
  * @tparam ReturnType The return type of the delegated method
- * @tparam Args List of arguments that get passed on to the delegated method
+ * @tparam Args List of arguments that will get passed on to the delegated method
  */
 template<typename ReturnType, typename... Args>
 class Delegate : public DelegateBase {
-
 protected:
     /**
      * The method that is being delegated
@@ -54,8 +59,9 @@ protected:
 public:
     /**
      * Constructor
-     * @tparam T Type
-     * @param obj Object
+     * @tparam T The Object's type. Automatically deduced by the compiler
+     * @tparam R The method's signature. Automatically deduced by the compiler
+     * @param obj The object
      * @param methodVar Pointer to method
      */
     template <typename T, typename R>
