@@ -67,10 +67,18 @@ public:
         return &values[top];
     }
 
+    /**
+     * @return The current index of the top item on the stack
+     */
     const int getTopIndex() {
         return top;
     }
 
+    /**
+     * Access an item of the stack by index
+     * @param index The index of the item
+     * @return The item
+     */
     T operator[](int index) {
         return values[index];
     }

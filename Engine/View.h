@@ -65,7 +65,7 @@ class View {
     /**
      * The delegate to a method which should be called when this View is called
      */
-    Delegate<void (GameObject::*)(class View*)>* onClickDelegate = nullptr;
+    Delegate<void, class View*>* onClickDelegate = nullptr;
 
     /**
      * The delegate to a method which should be called when the mouse hovers over this View
@@ -168,12 +168,12 @@ public:
      */
     template <typename T>
     void BindOnClickDelegate(T* object, void (T::*ptr)(View*)) {
-        onClickDelegate = new class Delegate<void (GameObject::*)(View*)>(object, ptr);
+        onClickDelegate = new class Delegate<void, View*>(object, ptr);
     }
 
     template<typename T>
     void BindOnHoverDelegate(T* object, void (T::*ptr)(EMouseEvent, int, int)) {
-        onHoverDelegate = new OtherMouseInputDelegate(object, (void (GameObject::*)(EMouseEvent, int, int)) ptr, GetBounds());
+        onHoverDelegate = new OtherMouseInputDelegate(object, ptr, GetBounds());
     }
 
     /**

@@ -9,9 +9,6 @@
 #include "Bound2D.h"
 
 
-// Forward declaration of GameObject class
-class GameObject;
-
 /**
  * An enum representing the buttons of the mouse
  */
@@ -38,7 +35,7 @@ enum class EMouseEvent {
 /**
  * An object that encapsulates the data required for binding a function to an keyboard input method
  */
-class KeyboardInputDelegate : public Delegate<void (GameObject::*)()> {
+class KeyboardInputDelegate : public Delegate<void> {
     /**
      * The key code corresponding to this delegate
      */
@@ -53,16 +50,12 @@ public:
      */
      template<typename T>
     KeyboardInputDelegate(T* object, void (T::*ptr)()) : key(key), Delegate(object, ptr) {}
-
-    /*virtual void Call() override {
-        (object->*method)();
-    }*/
 };
 
 /**
  * An object that encapsulates the data required for binding a function to mouse input
  */
-class MouseInputDelegate : public Delegate<void (GameObject::*)(EMouseButton, int, int)> {
+class MouseInputDelegate : public Delegate<void, EMouseButton, int, int> {
     /**
      * The area one screen at which this click should be registered to
      */
@@ -88,7 +81,8 @@ public:
      * @param d Pointer to the funciton to be called
      * @param screenRegion The area in the window where this event should be called
      */
-    MouseInputDelegate(GameObject* object, void (GameObject::*d)(EMouseButton, int, int), Bound2D screenRegion) :
+    template<typename T>
+    MouseInputDelegate(T* object, void (T::*d)(EMouseButton, int, int), Bound2D screenRegion) :
             Delegate(object, d), bounds(screenRegion), isBound(true){}
 
     /**
@@ -108,7 +102,7 @@ public:
     }
 };
 
-class OtherMouseInputDelegate : public Delegate<void (GameObject::*)(EMouseEvent, int, int)> {
+class OtherMouseInputDelegate : public Delegate<void, EMouseEvent, int, int> {
     /**
      * The area for this event to take place on the screen
      */
@@ -116,7 +110,7 @@ class OtherMouseInputDelegate : public Delegate<void (GameObject::*)(EMouseEvent
 
 public:
     template<typename T>
-    OtherMouseInputDelegate(T* object, void (GameObject::*method)(EMouseEvent, int, int), Bound2D bounds) : Delegate(object, method), area(bounds) {}
+    OtherMouseInputDelegate(T* object, void (T::*method)(EMouseEvent, int, int), Bound2D bounds) : Delegate(object, method), area(bounds) {}
 
     Bound2D GetArea() const {
         return area;
@@ -138,7 +132,7 @@ class InputController {
     /**
      * Multimap containing all input events bound to mouse input events
      */
-    std::multimap<EMouseEvent, MouseInputDelegate*> mouseInputs;
+    std::multimap<EMouseEvent, DelegateBase*> mouseInputs;
 
 
 
@@ -153,8 +147,7 @@ public:
      */
     template <typename T>
     void RegisterKeyboardInput(int key, T* object, void (T::*ptr)()) {
-        keyInputs.insert(std::make_pair(key,
-                                        new KeyboardInputDelegate((GameObject *) object, (void (GameObject::*)()) ptr)));
+        keyInputs.insert(std::make_pair(key, new KeyboardInputDelegate(object, ptr)));
     }
 
     /**
@@ -168,7 +161,7 @@ public:
      */
     template <typename T>
     void RegisterMouseInput(EMouseEvent event, T* object, void (T::*ptr)(EMouseButton, int, int)) {
-        mouseInputs.insert(std::make_pair(event, new MouseInputDelegate((GameObject*) object, (void (GameObject::*)(EMouseButton, int, int)) ptr)));
+        mouseInputs.insert(std::make_pair(event, new MouseInputDelegate(object, ptr)));
     }
 
     /**
@@ -182,12 +175,12 @@ public:
      */
     template <typename T>
     void RegisterMouseInput(EMouseEvent event, T* object, void (T::*ptr)(EMouseButton, int, int), Bound2D bounds) {
-        mouseInputs.insert(std::make_pair(event, new MouseInputDelegate((GameObject*) object, (void (GameObject::*)(EMouseButton, int, int)) ptr, bounds)));
+        mouseInputs.insert(std::make_pair(event, new MouseInputDelegate(object, ptr, bounds)));
     }
 
     template<typename T>
     void RegisterMouseInput(EMouseEvent event, T* object, void (T::*ptr)(EMouseEvent, int, int), Bound2D bounds) {
-        mouseInputs.insert(std::make_pair(event, (MouseInputDelegate*) new OtherMouseInputDelegate(object, (void (GameObject::*)(EMouseEvent, int, int)) ptr, bounds)));
+        mouseInputs.insert(std::make_pair(event, new OtherMouseInputDelegate(object, ptr, bounds)));
     }
 
     /**

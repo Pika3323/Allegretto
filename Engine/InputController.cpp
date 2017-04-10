@@ -1,7 +1,3 @@
-//
-// Created by Derek on 2/9/2017.
-//
-
 #include "InputController.h"
 
 void InputController::HandleInput(ALLEGRO_EVENT *event) {
@@ -21,7 +17,7 @@ void InputController::HandleInput(ALLEGRO_EVENT *event) {
         auto range = mouseInputs.equal_range(EMouseEvent(event->type));
         for (auto it = range.first; it != range.second; ++it) {
             if (dynamic_cast<MouseInputDelegate*>(it->second)) {
-                MouseInputDelegate *mouseInputDelegate = it->second;
+                MouseInputDelegate *mouseInputDelegate = (MouseInputDelegate*) it->second;
 
                 // Checks if this mouse event is bound to a specific screen region or not
                 if (!mouseInputDelegate->IsBound()) {

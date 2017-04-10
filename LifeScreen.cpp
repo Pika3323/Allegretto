@@ -18,7 +18,6 @@ void LifeScreen::Init(InputController* inputController) {
     lifeMatrix = apmatrix<char>(matrixRows, matrixColumns, DEAD);
 
     // Setup keyboard input binding
-    inputController->RegisterKeyboardInput(ALLEGRO_KEY_ESCAPE, GEngine, &Engine::Quit);
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_SPACE, this, &LifeScreen::nextGeneration);
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_P, this, &LifeScreen::toggleAutoGenerate);
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_C, this, &LifeScreen::clearMatrix);

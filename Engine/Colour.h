@@ -60,6 +60,18 @@ struct Colour {
     operator ALLEGRO_COLOR() const;
 
     /**
+     * Converts the colour into a grayscale colour
+     * @return The colour in grayscale
+     */
+    Colour Grayscale();
+
+    /**
+     * Calculates the luminance (brightness) of a colour
+     * @return The luminance of the colour
+     */
+    double Luminance();
+
+    /**
      * A default black colour
      */
     static const Colour BLACK;
