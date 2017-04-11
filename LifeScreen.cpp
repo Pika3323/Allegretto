@@ -22,6 +22,13 @@ void LifeScreen::Init(InputController* inputController) {
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_P, this, &LifeScreen::toggleAutoGenerate);
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_C, this, &LifeScreen::clearMatrix);
 
+    //inputController->RegisterKeyboardInput(ALLEGRO_KEY_L, this, +[](){ GEngine->PrintDebugText("Yoyoyoo"); });
+
+    /*auto lambda = [this](){std::cout << a << std::endl; };
+    LambdaDelegate* delegate = new LambdaDelegate(lambda);
+
+    delegate->Call();*/
+
     // The number keys open different pre-made levels that can be viewed
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_1, this, &LifeScreen::loadCat);
     inputController->RegisterKeyboardInput(ALLEGRO_KEY_2, this, &LifeScreen::loadGlider);

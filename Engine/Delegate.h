@@ -42,13 +42,19 @@ public:
 };
 
 /**
+ * A really interesting template hack..
+ * @tparam Signature The function signature of the delegate. Passed onto the actual template definition below.
+ */
+template<typename Signature> class Delegate;
+
+/**
  * A class used to leverage polymorphism into storing pointers to methods of any type of object.
  * Called an extreme "hack" by some people. Called useless by other naive people. But man.. is it useful.
  * @tparam ReturnType The return type of the delegated method
  * @tparam Args List of arguments that will get passed on to the delegated method
  */
 template<typename ReturnType, typename... Args>
-class Delegate : public DelegateBase {
+class Delegate<ReturnType(Args...)> : public DelegateBase {
 protected:
     /**
      * The method that is being delegated
@@ -71,7 +77,19 @@ public:
      * Calls the method on the set object
      * @param args Any arguments that should be passed into the method
      */
-    void Call(Args... args) {
+    void Call(Args... args){
         (object->*method)(args...);
     }
 };
+
+/*
+template <typename Signature>
+class LambdaDelegate;
+
+template <typename ReturnType, typename... Args>
+class LambdaDelegate<ReturnType(Args...)> : public DelegateBase{
+protected:
+    auto lambda = [](Args...)->ReturnType{};
+public:
+    LambdaDelegate() : DelegateBase(nullptr) {}
+};*/

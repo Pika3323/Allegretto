@@ -65,7 +65,7 @@ class View {
     /**
      * The delegate to a method which should be called when this View is called
      */
-    Delegate<void, class View*>* onClickDelegate = nullptr;
+    Delegate<void(class View*)>* onClickDelegate = nullptr;
 
     /**
      * The delegate to a method which should be called when the mouse hovers over this View
@@ -168,7 +168,7 @@ public:
      */
     template <typename T>
     void BindOnClickDelegate(T* object, void (T::*ptr)(View*)) {
-        onClickDelegate = new class Delegate<void, View*>(object, ptr);
+        onClickDelegate = new Delegate<void(class View*)>(object, ptr);
     }
 
     template<typename T>

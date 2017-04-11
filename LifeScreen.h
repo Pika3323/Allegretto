@@ -19,6 +19,9 @@ class LifeScreen : public Screen{
     const int GRID_SIZE = 10;
 
 public:
+
+    int a = 16;
+
     // Constructor
     LifeScreen(int screenWidth, int screenHeight);
 

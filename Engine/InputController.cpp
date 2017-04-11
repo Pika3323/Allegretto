@@ -7,7 +7,11 @@ void InputController::HandleInput(ALLEGRO_EVENT *event) {
 
         for (auto it = range.first; it != range.second; ++it) {
             // Calls the associated bound functions
-            it->second->Call();
+            if (dynamic_cast<KeyboardInputDelegate*>(it->second)) {
+                ((KeyboardInputDelegate* )it->second)->Call();
+            } /*else if(dynamic_cast<LambdaDelegate*>(it->second)) {
+                ((LambdaDelegate* )it->second)->Call();
+            }*/
         }
 
     } else if (event->type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN || event->type == ALLEGRO_EVENT_MOUSE_BUTTON_UP ||

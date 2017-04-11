@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
     GEngine->Init();
 
     // Configures the game of life screen to be the active screen
-    GEngine->SetActiveScreen(new class RpnScreen(GEngine->GetDisplayWidth(), GEngine->GetDisplayHeight()));
+    GEngine->SetActiveScreen(new class LifeScreen(GEngine->GetDisplayWidth(), GEngine->GetDisplayHeight()));
 
     while (GEngine->ShouldDoTick()) {
         ALLEGRO_EVENT ev;

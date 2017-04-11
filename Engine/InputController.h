@@ -35,7 +35,7 @@ enum class EMouseEvent {
 /**
  * An object that encapsulates the data required for binding a function to an keyboard input method
  */
-class KeyboardInputDelegate : public Delegate<void> {
+class KeyboardInputDelegate : public Delegate<void()> {
     /**
      * The key code corresponding to this delegate
      */
@@ -55,7 +55,7 @@ public:
 /**
  * An object that encapsulates the data required for binding a function to mouse input
  */
-class MouseInputDelegate : public Delegate<void, EMouseButton, int, int> {
+class MouseInputDelegate : public Delegate<void(EMouseButton, int, int)> {
     /**
      * The area one screen at which this click should be registered to
      */
@@ -102,7 +102,7 @@ public:
     }
 };
 
-class OtherMouseInputDelegate : public Delegate<void, EMouseEvent, int, int> {
+class OtherMouseInputDelegate : public Delegate<void(EMouseEvent, int, int)> {
     /**
      * The area for this event to take place on the screen
      */
