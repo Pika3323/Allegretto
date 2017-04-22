@@ -8,7 +8,7 @@ TextView::TextView(const Bound2D &bounds) : View(bounds) {
     font = new Font("Roboto-Regular.ttf");
 }
 
-TextView::TextView(Vector2D position) : View(position, 0, 0){
+TextView::TextView(const Vector2D& position) : View(position, 0, 0){
     font = new Font("Roboto-Regular.ttf");
 }
 

@@ -24,9 +24,9 @@ public:
      * Constructs the TextView using the default view constructor
      * @param bounds
      */
-    TextView(const Bound2D &bounds);
+    explicit TextView(const Bound2D& bounds);
 
-    TextView(const Vector2D position);
+    explicit TextView(const Vector2D& position);
 
     /**
      * Sets the text for the text view

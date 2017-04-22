@@ -22,7 +22,7 @@ protected:
      * Protected constructor for a base Delegate. Should only be called by inheriting classes
      * @param object The object whose method is being delegated
      */
-    DelegateBase(DelegateObjectBase* object) : object(object) {}
+    explicit DelegateBase(DelegateObjectBase* object) : object(object) {}
 
 public:
     /**
@@ -38,7 +38,7 @@ public:
     /**
      * Virtual Destructor required for polymorphism
      */
-    virtual ~DelegateBase() {}
+    virtual ~DelegateBase() = default;
 };
 
 /**

@@ -102,14 +102,24 @@ public:
      * Constructor
      * @param bounds The bounds of the view. Represents the size and position of the bound.
      */
-    View(Bound2D bounds);
+    explicit View(Bound2D bounds);
 
     View(Vector2D position, float width, float height);
+
+    /**
+     * Copy constructor
+     */
+    View(const View& view);
 
     /**
      * Destructor
      */
     virtual ~View();
+
+    /**
+     * Copy assignment operator
+     */
+    View& operator=(const View& view);
 
     /**
      * Get the drawn height of the View

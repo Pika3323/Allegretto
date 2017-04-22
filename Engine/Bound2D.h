@@ -11,13 +11,13 @@ struct Bound2D {
      * The upper corner of the bound. Can be visualized as being the "top-left" corner of the box that represents
      * this bound.
      */
-    Vector2D upper;
+    Vector2D upper{};
 
     /**
      * The lower corner of the bound. Can be visualized as being the "bottom-right" corner of the box that represents
      * this bound.
      */
-    Vector2D lower;
+    Vector2D lower{};
 
     Bound2D(Vector2D pointOne, Vector2D pointTwo) {
         if (pointOne < pointTwo) {

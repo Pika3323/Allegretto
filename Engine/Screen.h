@@ -27,11 +27,11 @@ protected:
 public:
     Screen(int screenWidth, int screenHeight);
 
-    virtual void Init(InputController* input) override = 0 ;
+    void Init(InputController* input) override = 0 ;
 
-    virtual void Tick(float delta) override = 0;
+    void Tick(float delta) override = 0;
 
-    virtual void Destroy() override = 0;
+    void Destroy() override = 0;
 
     virtual void DrawToBuffer();
 

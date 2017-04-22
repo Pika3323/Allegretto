@@ -3,16 +3,19 @@
 //
 
 #include "View.h"
-#include "Engine.h"
 
 View::View(Bound2D bounds)
         : position(bounds.upper), height(bounds.lower.y - bounds.upper.y), width(bounds.lower.x - bounds.upper.x){
     View(position, width, height);
 }
+
 View::View(Vector2D position, float width, float height) : position(position), width(width), height(height) {
     ResizeTextures();
 }
 
+View::View(const View& view) {
+    *this = view;
+}
 
 float View::GetWidth() {
     return width + paddingLeft + paddingRight;
@@ -190,4 +193,9 @@ ECursor View::GetCursor() {
 
 void View::SetCursor(ECursor cursor) {
     View::cursor = cursor;
+}
+
+View& View::operator=(const View& view) {
+    *this = view;
+    return *this;
 }

@@ -26,7 +26,7 @@ struct DebugOutput{
     /**
      * The amount of time the message has already been disabled
      */
-    float elapsedTime;
+    float elapsedTime = 0.f;
 
     /**
      * Constructs a message structure
@@ -34,6 +34,6 @@ struct DebugOutput{
      * @param colour The colour
      * @param duration The duration
      */
-    DebugOutput(const std::string &text, const Colour &colour, float duration) : text(text), color(colour),
-                                                                                       duration(duration) {}
+    explicit DebugOutput(const std::string &text, const Colour &colour = Colour::GREEN, float duration = 5.f) : text(text), color(colour),
+                                                                                                                duration(duration) {}
 };
