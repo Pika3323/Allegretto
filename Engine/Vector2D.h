@@ -26,6 +26,8 @@ struct Vector2D{
         y = V.y;
     }
 
+    //static const Vector2D zero = {0.f, 0.f};
+
     Vector2D operator+(const Vector2D &V) const {
         return Vector2D(x + V.x, y + V.y);
     }
@@ -134,5 +136,4 @@ struct Vector2D{
         return Vector2D(A - B).Magnitude();
     }
 };
-
 

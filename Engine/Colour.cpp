@@ -26,3 +26,9 @@ Colour Colour::Grayscale() {
 double Colour::Luminance() {
     return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
 }
+
+bool Colour::operator==(const Colour& colour) {
+    return colour.red == red && colour.blue == blue && colour.green == green && colour.alpha == alpha;
+}
+
+Colour::Colour(ALLEGRO_COLOR colour) : Colour((uint8_t) colour.r, (uint8_t) colour.g, (uint8_t) colour.b, (uint8_t) colour.a) {}

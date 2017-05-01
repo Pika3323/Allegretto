@@ -6,8 +6,11 @@
 
 #include "Engine/Engine.h"
 #include "Engine/Screen.h"
+#include "Peg.h"
 
 class HanoiScreen : public Screen{
+    Peg* pegs[3];
+
 public:
     HanoiScreen(int screenWidth, int screenHeight);
 

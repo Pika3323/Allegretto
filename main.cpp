@@ -16,9 +16,11 @@
 #include "LifeScreen.h"
 #include "RpnScreen.h"
 
-Engine* GEngine = new Engine();
+Engine* GEngine;
 
 int main(int argc, char** argv) {
+    GEngine = new Engine();
+
     GEngine->Init();
 
     // Configures the game of life screen to be the active screen

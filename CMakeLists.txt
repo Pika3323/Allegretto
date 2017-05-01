@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 14)
 INCLUDE_DIRECTORIES(libs/allegro/include)
 LINK_DIRECTORIES(libs/allegro/lib)
 
-set(SOURCE_FILES main.cpp Engine/Engine.cpp Engine/Engine.h Engine/Core.h Engine/Delegate.h Engine/Screen.h LifeScreen.cpp LifeScreen.h Engine/InputController.cpp Engine/InputController.h Engine/GameObject.h Engine/DebugOutput.h Engine/Colour.cpp Engine/Colour.h Engine/Vector2D.h Engine/Bound2D.h RpnScreen.cpp RpnScreen.h Stack.h RpnStack.cpp RpnStack.h Engine/View.cpp Engine/View.h Engine/Views/TextView.cpp Engine/Views/TextView.h Engine/Screen.cpp Engine/Font.cpp Engine/Font.h Engine/Vector3D.h HanoiScreen.cpp HanoiScreen.h)
+set(SOURCE_FILES main.cpp Engine/Engine.cpp Engine/Engine.h Engine/Core.h Engine/Delegate.h Engine/Screen.h LifeScreen.cpp LifeScreen.h Engine/InputController.cpp Engine/InputController.h Engine/GameObject.h Engine/DebugOutput.h Engine/Colour.cpp Engine/Colour.h Engine/Vector2D.h Engine/Bound2D.h RpnScreen.cpp RpnScreen.h Stack.h RpnStack.cpp RpnStack.h Engine/View.cpp Engine/View.h Engine/Views/TextView.cpp Engine/Views/TextView.h Engine/Screen.cpp Engine/Font.cpp Engine/Font.h Engine/Vector3D.h HanoiScreen.cpp HanoiScreen.h Peg.cpp Peg.h)
 
 if(DOXYGEN_FOUND)
 

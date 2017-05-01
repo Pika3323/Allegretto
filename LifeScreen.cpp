@@ -86,6 +86,11 @@ void LifeScreen::Tick(float delta) {
 
 void LifeScreen::Draw() {
 
+    /*for (uint8_t i = 0; i < 0xFF; i++) {
+        for (uint8_t j = 0; j < 0xFF; j++) {
+            al_draw_filled_rectangle(j * GRID_SIZE, i * GRID_SIZE, j * GRID_SIZE + GRID_SIZE, i * GRID_SIZE + GRID_SIZE, Colour(j, j, i).Grayscale());
+        }
+    }*/
 
     // Alerts the user that the game is paused
     if (!bAutoGenerate) {
@@ -105,10 +110,11 @@ void LifeScreen::Draw() {
     for (int i = 0; i < matrixRows; ++i) {
         for (int j = 0; j < matrixColumns; ++j) {
             if (lifeMatrix[i][j] == ALIVE) {
-                al_draw_filled_rectangle(j * GRID_SIZE, i * GRID_SIZE, j * GRID_SIZE + GRID_SIZE, i * GRID_SIZE + GRID_SIZE, Colour(33, 150, 243));
+                al_draw_filled_rectangle(j * GRID_SIZE, i * GRID_SIZE, j * GRID_SIZE + GRID_SIZE, i * GRID_SIZE + GRID_SIZE, Colour(0x8a035a9e));
             }
         }
     }
+
 
     // Use the old-fashioned itoa number to string conversion since std::to_string doesn't work with most compilers
     char* generationNumber;

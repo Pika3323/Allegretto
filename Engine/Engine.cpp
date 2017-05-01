@@ -1,8 +1,9 @@
-//
-// Created by Derek on 2/9/2017.
-//
+// 
+//Created by Derek on 2/9/2017.
+// 
 
 #include "Engine.h"
+
 
 Engine::Engine() {
     activeScreen = nullptr;
@@ -49,7 +50,7 @@ void Engine::Init() {
     }
     timer = al_create_timer(1.0 / FPS);
 
-    //Get the current time for time calculations
+    // Get the current time for time calculations
     oldTime = al_get_time();
 
     al_set_new_display_flags(ALLEGRO_OPENGL);
@@ -83,17 +84,17 @@ void Engine::Tick() {
     currentDelta = (float) (al_get_time() - oldTime);
     oldTime = al_get_time();
 
-    //Gets the current state of input methods
+    // Gets the current state of input methods
     al_get_mouse_state(&mouseState);
     al_get_keyboard_state(&keyboardState);
 
-    //Tick the current active screen, if it exists
+    // Tick the current active screen, if it exists
     if (activeScreen) {
         activeScreen->Tick(currentDelta);
     }
 
-    //Counts the duration of debug outputs and deletes them once they have been on screen for their allotted time
-    for (int i = 0; i < (int)debugStrings.size(); i++){
+    // Counts the duration of debug outputs and deletes them once they have been on screen for their allotted time
+    for (int i = 0; i < (int) debugStrings.size(); i++){
         debugStrings[i].elapsedTime += currentDelta;
         if (debugStrings[i].elapsedTime >= debugStrings[i].duration){
             debugStrings.erase(debugStrings.begin() + i);
@@ -123,11 +124,11 @@ void Engine::SetActiveScreen(Screen *screen) {
 }
 
 void Engine::Draw() {
-    //Clears the screen to black
+    // Clears the screen to black
     al_set_target_bitmap(screenBuffer);
     al_clear_to_color(Colour::BLACK);
 
-    //Draws the current screen, if present
+    // Draws the current screen, if present
     if (activeScreen) {
         activeScreen->DrawToBuffer();
     }
@@ -140,7 +141,7 @@ void Engine::Draw() {
         al_draw_bitmap(bitmap, 0, 0, 0);
     }
 
-    //Draws the engine buffer to the screen buffer
+    // Draws the engine buffer to the screen buffer
     al_set_target_bitmap(al_get_backbuffer(display));
     al_draw_bitmap(screenBuffer, 0, 0, 0);
 
@@ -149,7 +150,7 @@ void Engine::Draw() {
     }
 
     if (debugFlags & ENGINE_DEBUG_DRAW_DEBUG_STRINGS) {
-        //Draws debug strings to the screen
+        // Draws debug strings to the screen
         for (int i = 0; i < (int) debugStrings.size(); i++) {
             al_draw_textf(defaultFont, Colour::BLACK, 6, i * 16 + 50, ALLEGRO_ALIGN_LEFT, "%s",
                           debugStrings[i].text.c_str());
@@ -162,6 +163,8 @@ void Engine::Draw() {
     al_clear_to_color(Colour::BLACK);
 
     drawStack.clear();
+
+
 
     bShouldRedraw = false;
 }
@@ -199,11 +202,11 @@ ALLEGRO_TIMER* Engine::GetTimer() const {
 void Engine::HandleInput(ALLEGRO_EVENT *event) {
     switch (event->type) {
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
-            //Quit the game, close the window
+            // Quit the game, close the window
             Quit();
             break;
         case ALLEGRO_EVENT_TIMER:
-            //Handle current tick functions
+            // Handle current tick functions
             Tick();
             break;
         case ALLEGRO_EVENT_DISPLAY_RESIZE:

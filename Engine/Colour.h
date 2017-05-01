@@ -34,24 +34,26 @@ struct Colour {
     uint8_t alpha;
 
     /**
-     * Constructs a fully opaque colour. Alpha is set to 0xFF by default.
-     * @param r The red component of the colour
-     * @param g The green component of the colour
-     * @param b The blue component of the colour
-     */
-    Colour(uint8_t r, uint8_t g, uint8_t b) : red(r), green(g), blue(b), alpha(0xFF) {}
-
-    /**
      * Constructs a colour with a custom alpha component.
      * @param r The red component of the colour
      * @param g The green component of the colour
      * @param b The blue component of the colour
      * @param a The alpha (opacity) component of the colour
      */
-    Colour(uint8_t r, uint8_t g, uint8_t b, uint8_t a) : red(r), green(g), blue(b), alpha(a) {}
+    Colour(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0xFF) : red(r), green(g), blue(b), alpha(a) {}
 
-    explicit Colour(uint32_t c) : red((uint8_t) ((c >> 8) & 0xFF)), green((uint8_t) ((c >> 4) & 0xFF)), blue(
-            (uint8_t) ((c >> 2) & 0xFF)), alpha((uint8_t) (c > 0xFFFFFF ? c & 0xFF : 0xFF)) {}
+    /**
+     * Constructor that uh.... takes a hex number and splits it into its colour components
+     * format:
+     * @param c
+     */
+    explicit Colour(uint32_t c) : red((uint8_t) ((c >> 16) & 0xFF)), green((uint8_t) ((c >> 8) & 0xFF)), blue(
+            (uint8_t) (c & 0xFF)), alpha((uint8_t) (c > 0xFFFFFF ? c & 0xFF000000 : 0xFF)) {}
+
+    explicit Colour(ALLEGRO_COLOR colour);
+
+
+    bool operator ==(const Colour& colour);
 
     /**
      * Automatically casts the colour to an ALLEGRO_COLOR

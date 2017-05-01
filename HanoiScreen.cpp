@@ -7,6 +7,10 @@
 HanoiScreen::HanoiScreen(int screenWidth, int screenHeight) : Screen(screenWidth, screenHeight) {}
 
 void HanoiScreen::Init(InputController *input) {
+    for (int i = 0; i < 3; i++) {
+        pegs[i] = new Peg();
+    }
+
 
 }
 
