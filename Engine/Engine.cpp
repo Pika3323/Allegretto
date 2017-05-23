@@ -93,6 +93,20 @@ void Engine::Tick() {
         activeScreen->Tick(currentDelta);
     }
 
+    // Handle registered timers
+    for (int i = 0; i < activeTimers.size(); i++)  {
+        if (!activeTimers[i]->isCancelled && !activeTimers[i]->isFired) {
+            if (activeTimers[i]->elapsed >= activeTimers[i]->target) {
+                activeTimers[i]->Fire();
+            } else {
+                activeTimers[i]->elapsed += currentDelta;
+            }
+        } else {
+            // Remove the cancelled timer
+            activeTimers.erase(activeTimers.begin() + i);
+        }
+    }
+
     // Counts the duration of debug outputs and deletes them once they have been on screen for their allotted time
     for (int i = 0; i < (int) debugStrings.size(); i++){
         debugStrings[i].elapsedTime += currentDelta;
@@ -308,4 +322,11 @@ void Engine::ToggleDebugDrawings() {
 
 void Engine::SetCursor(ECursor cursor) {
     al_set_system_mouse_cursor(display, (ALLEGRO_SYSTEM_MOUSE_CURSOR) cursor);
+}
+
+Timer* Engine::AddTimer(float time, Delegate<void()> callback) {
+    Timer* timer = new Timer(time, callback);
+    activeTimers.push_back(timer);
+
+    return timer;
 }

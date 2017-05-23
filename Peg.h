@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <vector>
+#include "Stack.h"
 
 /**
  * A ring that goes on the peg
@@ -13,9 +13,10 @@ class PegRing {
     int number;
 
 public:
-    PegRing(int number);
+    explicit PegRing(int number);
 
     int GetNumber() const;
+
 };
 
 
@@ -23,10 +24,16 @@ public:
  * The pegs that the rings go on
  */
 class Peg {
-    std::vector<PegRing*> rings;
+    Stack<PegRing*> rings;
+
+protected:
+    void AddRing(PegRing* ring);
 
 public:
 
+    explicit Peg (int ringCount);
+
+    void MoveTopTo(Peg* destination);
 };
 
 

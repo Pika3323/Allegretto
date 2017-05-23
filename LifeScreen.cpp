@@ -52,6 +52,9 @@ void LifeScreen::Init(InputController* inputController) {
     textView->SetCursor(ECursor::Link);
 
     AddView(textView);
+
+    auto timer = GEngine->AddTimer(5.f, this, &LifeScreen::toggleAutoGenerate);
+    timer->Cancel();
 }
 
 void LifeScreen::Tick(float delta) {

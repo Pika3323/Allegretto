@@ -7,10 +7,18 @@
 #include "Engine/Engine.h"
 #include "Engine/Screen.h"
 #include "Peg.h"
+#include "Engine/Transform.h"
+#include "Engine/Mesh.h"
+#include "allegro5/transformations.h"
 
 class HanoiScreen : public Screen{
     Peg* pegs[3];
 
+    ALLEGRO_TRANSFORM cameraTransform;
+
+    Mesh* mesh;
+
+    void setupTransform(ALLEGRO_TRANSFORM* transform);
 public:
     HanoiScreen(int screenWidth, int screenHeight);
 
@@ -22,6 +30,10 @@ public:
 
 protected:
     void Draw() override;
+
+private:
+
+    void Hanoi(int rings, Peg* start, Peg* end, Peg* intermediate);
 };
 
 

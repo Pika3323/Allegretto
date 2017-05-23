@@ -15,6 +15,7 @@
 #include "Engine/Engine.h"
 #include "LifeScreen.h"
 #include "RpnScreen.h"
+#include "HanoiScreen.h"
 
 Engine* GEngine;
 

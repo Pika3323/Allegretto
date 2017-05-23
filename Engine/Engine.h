@@ -9,6 +9,7 @@
 #include "InputController.h"
 #include "DebugOutput.h"
 #include "Colour.h"
+#include "Timer.h"
 
 #define FPS 60
 
@@ -133,6 +134,11 @@ class Engine {
      * Any special bit flags that should be taken in consideration for drawing while debugging
      */
     uint8_t debugFlags = 0;
+
+    /**
+     * List of active timers being tracked by the engine
+     */
+    std::vector<class Timer*> activeTimers;
 
 public:
     /**
@@ -308,6 +314,19 @@ public:
      * @param cursor The type of cursor to display
      */
     void SetCursor(ECursor cursor);
+
+    /**
+     * Add a timer to be managed by the engine
+     * @param time The time in seconds after which to fire the callback
+     * @param callback The function to run when fired
+     * @return The timer object
+     */
+    Timer* AddTimer(float time, Delegate<void()> callback);
+
+    template<typename T, typename R>
+    Timer* AddTimer(float time, T* obj, R callback) {
+        AddTimer(time, Delegate<void()>(obj, callback));
+    };
 };
 
 /**
